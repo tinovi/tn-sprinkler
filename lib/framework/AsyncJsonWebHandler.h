@@ -70,8 +70,7 @@ class AsyncJsonWebHandler : public AsyncWebHandler {
   virtual void handleRequest(AsyncWebServerRequest* request) override final {
     // no request configured
     if (!_onRequest) {
-      Serial.print("No request callback was configured for endpoint: ");
-      Serial.println(_uri);
+      log_i("No request callback was configured for endpoint: %s \n",_uri);
       request->send(500);
       return;
     }

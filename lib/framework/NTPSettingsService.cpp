@@ -47,12 +47,12 @@ void NTPSettingsService::onConfigUpdated() {
 
 #ifdef ESP32
 void NTPSettingsService::onStationModeGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
-  Serial.println("Got IP address, starting NTP Synchronization");
+  log_i("Got IP address, starting NTP Synchronization \n");
   _reconfigureNTP = true;
 }
 
 void NTPSettingsService::onStationModeDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
-  Serial.println("WiFi connection dropped, stopping NTP.");
+  log_i("WiFi connection dropped, stopping NTP.\n");
   _reconfigureNTP = false;
   sntp_stop();
 }
@@ -70,7 +70,7 @@ void NTPSettingsService::onStationModeDisconnected(const WiFiEventStationModeDis
 #endif
 
 void NTPSettingsService::configureNTP() {
-  Serial.println("Configuring NTP...");
+  log_i("Configuring NTP...\n");
   if (_settings.enabled) {
 #ifdef ESP32
     configTzTime(_settings.tzFormat.c_str(), _settings.server.c_str());

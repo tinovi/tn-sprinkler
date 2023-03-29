@@ -18,24 +18,19 @@ WiFiStatus::WiFiStatus(AsyncWebServer* server, SecurityManager* securityManager)
 
 #ifdef ESP32
 void WiFiStatus::onStationModeConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
-  Serial.println("WiFi Connected.");
+  log_i("WiFi Connected \n");
 }
 
 void WiFiStatus::onStationModeDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
-  Serial.print("WiFi Disconnected. Reason code=");
-  Serial.println(info.wifi_sta_disconnected.reason);
+  log_i("WiFi Disconnected. Reason code=%i \n", info.wifi_sta_disconnected.reason);
 }
 
 void WiFiStatus::onStationModeGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
-  Serial.print("WiFi Got IP. localIP=");
-  Serial.print(WiFi.localIP().toString());
-  Serial.print(", hostName=");
-  Serial.println(WiFi.getHostname());
+  log_i("WiFi Got IP. localIP=%s, hostName=%s \n",WiFi.localIP().toString(), WiFi.getHostname());
 }
 #elif defined(ESP8266)
 void WiFiStatus::onStationModeConnected(const WiFiEventStationModeConnected& event) {
-  Serial.print("WiFi Connected. SSID=");
-  Serial.println(event.ssid);
+  log_i("WiFi Connected %s \n",event.ssid);
 }
 
 void WiFiStatus::onStationModeDisconnected(const WiFiEventStationModeDisconnected& event) {

@@ -47,7 +47,7 @@ class SettingsPersistence {
 
   void readFromFS() {
     File configFile = _fs->open(_filePath, "r");
-    Serial.println("readFromFS...");
+    log_i("readFromFS...\n");
 while(configFile.available()){
     Serial.write(configFile.read());
 }

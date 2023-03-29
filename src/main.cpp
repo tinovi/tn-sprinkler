@@ -1,19 +1,20 @@
 #include <DemoProject.h>
 #include <ESP8266React.h>
 #include <FS.h>
-// #include "esp32-hal-log.h"
-#define SERIAL_BAUD_RATE 115200
+#include "decoder.h"
+#define SERIAL_BAUD_RATE 9600
 
 AsyncWebServer server(80);
 ESP8266React esp8266React(&server, &SPIFFS);
 DemoProject demoProject = DemoProject(&server, &SPIFFS, esp8266React.getSecurityManager());
 
 void setup() {
+  	mac = String(getMacAddress());
+
   // start serial and filesystem
   Serial.begin(SERIAL_BAUD_RATE);
-    Serial.println("setup...");
-	// log_i("setup %s\n");
-
+  log_i("setup... \n");
+	
   // start the file system (must be done before starting the framework)
 #ifdef ESP32
   SPIFFS.begin(true);

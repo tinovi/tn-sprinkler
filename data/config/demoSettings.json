@@ -1,3 +1,4 @@
 {
-  "blink_speed": 100
+  "url":  "https://tinovi.com/api/v1/gw/json",
+  "auth":""
 }

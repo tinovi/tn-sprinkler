@@ -1,6 +1,7 @@
 #include <DemoProject.h>
 #include <ESPAsyncWebServer.h>
 #include <functional>
+#include "decoder.h"
 
 DemoProject::DemoProject(AsyncWebServer* server, FS* fs, SecurityManager* securityManager) :
     AdminSettingsService(server, fs, securityManager, DEMO_SETTINGS_PATH, DEMO_SETTINGS_FILE),
@@ -25,53 +26,102 @@ void DemoProject::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * clie
 
   if(type == WS_EVT_CONNECT){
 
-    Serial.println("Websocket client connection received");
+    log_i("Websocket client connection received \n");
     const String &token = ((const AsyncWebServerRequest *) (arg))->arg("Authorization");
     if (token.startsWith(AUTHORIZATION_HEADER_PREFIX)) {
        Authentication authentication = ((SecuritySettingsService *)(this->_securityManager))->authenticateJWT(token.substring(AUTHORIZATION_HEADER_PREFIX_LEN));
        if (!getAuthenticationPredicate()(authentication)) {
-         Serial.println("Unauthorized invalid token");
+         log_i("Unauthorized invalid token \n");
          client->close(401,"Invalid Token");  
+       }else{
+        wsClient = client;
        }
     }else{
-      Serial.println("Unauthorized token missing");
+      log_i("Unauthorized token missing \n");
       client->close(401,"Invalid Token"); 
     }
   } else if(type == WS_EVT_DISCONNECT){
-
-    Serial.println("Client disconnected");
+    wsClient = nullptr;
+    log_i("Client disconnected \n");
   } else if(type == WS_EVT_DATA){
 
-    //Serial.println("Data received: ");
     data[len-1] = '\0';
     String dataIn((char*) data);
     int separator = dataIn.indexOf('|');
     String key = dataIn.substring(0,separator);
     String value = dataIn.substring(separator + 1);
-    //Serial.println(key);
-    //Serial.println(value);
+    log_i("Data received: %s   %s \n", key, value);
     if (key = "blink_speed"){
-        int ivalue = value.toInt();
-        _settings.blinkSpeed = ivalue;
-        ledcWrite(0, ivalue);
+       
+       // ledcWrite(0, ivalue);
     }
-    //Serial.println();
   }
 }
 
-void DemoProject::loop() {
-  // ledcWrite(0, _settings.blinkSpeed);
+void DemoProject::send(const char * message){
+  if(wsClient != nullptr && wsClient->canSend()) {
+    wsClient->text(message);
+  }
 }
 
-void DemoProject::readFromJsonObject(JsonObject& root) {
-  _settings.blinkSpeed = root["blink_speed"] | DEFAULT_BLINK_SPEED;
-  //ledcWrite(BLINK_LED, 100/_settings.blinkSpeed*255);
-  //ledcWrite(0, 100/_settings.blinkSpeed*255);
 
+//AT+RCV=051c3296,11,-7,8,00FE2001014A014E01BA01D701B7020C087208170857
+// AT+RCV=051c3296,1,-16,8,00FE20010192018201D301F001C8022107FD079A0811
+//AT+DOWN=051c3296:010000001E
+
+	std::string rxd;
+
+	void DemoProject::loop(){
+		for (; Serial.available(); ) {
+			rxd+=Serial.read();
+		}
+		int pp = rxd.find('\r');
+		if(pp == std::string::npos){
+			pp = rxd.find('\n');
+		}
+		if(pp != std::string::npos){
+			if (rxd.find("AT+RCV=", 0) != std::string::npos){
+				//SerialBLE.print(rxd.c_str());
+				int ep = rxd.find('=');
+				std::string devid = rxd.substr(ep+1,8);
+				uint32_t eui;
+				hexCharacterStringToBytes((uint8_t *)&eui, devid.c_str()); 
+				int snum = FindEui(eui);
+				int lp =  rxd.rfind(',');
+				log_i("lp=%i, pp=%i snum=%i eui=%i devid=%s %s\n", lp, pp,snum, eui, devid.c_str(), rxd.c_str());
+				if(snum>-1){
+					rxd.substr(lp+1, pp - lp - 1).copy(Sensors[snum].dataStr, rxd.length() - lp - 1);
+					Sensors[snum].lastTime = millis();
+					Sensors[snum].clen =  pp - lp - 1;
+					Sensors[snum].dataStr[Sensors[snum].clen] = '\0';
+					devid.copy(Sensors[snum].devid,8);
+					log_i("data: %s len=%i  \n", Sensors[snum].dataStr, Sensors[snum].clen);
+					sscanf(rxd.substr(ep+10, lp-ep-10).c_str(), "%u,%i,%i", &Sensors[snum].up_cnt, &Sensors[snum].rssi, &Sensors[snum].snr);
+					log_i("parsed :: %i,%i,%i devid=%s\n", Sensors[snum].up_cnt, Sensors[snum].rssi, Sensors[snum].snr, Sensors[snum].devid);
+					decodeUplink(snum);
+					if(WiFi.status() == WL_CONNECTED){
+						generateStr(snum);
+						start_http_json(Sensors[snum].devid, _settings.url, _settings.auth);
+						Sensors[snum].hasData = false;
+					}else{
+						Sensors[snum].hasData = true;
+						//hasData = true;
+					}
+				}
+			}
+			rxd = "";
+		}
+
+	}
+
+
+
+void DemoProject::readFromJsonObject(JsonObject& root) {
+  _settings.url = root["url"] | DEFFAULT_URL;
+  _settings.auth = root["auth"]| "";
 }
 
 void DemoProject::writeToJsonObject(JsonObject& root) {
-  // connection settings
-  root["blink_speed"] = _settings.blinkSpeed;
-  ledcWrite(0, _settings.blinkSpeed);
+  root["url"] = _settings.url;
+  root["auth"] = _settings.auth;
 }
