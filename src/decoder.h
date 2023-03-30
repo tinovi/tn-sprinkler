@@ -73,7 +73,7 @@ extern DataMag Sensors[DEMO_SLOT_NUMBER];
 extern String mac;
 int FindEui(uint32_t Eui);
 extern StaticJsonDocument<1024> data;
-
+extern int SlotCounter;   
 uint8_t hexCharacterStringToBytes(uint8_t *byteArray, const char *hexString);
 void decodeUplink(int cnum);
 void generateStr(int cnum);

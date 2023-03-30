@@ -10,6 +10,7 @@
 #define DEFFAULT_URL "https://tinovi.com/api/v1/gw/json"
 #define DEMO_SETTINGS_FILE "/config/demoSettings.json"
 #define DEMO_SETTINGS_PATH "/rest/demoSettings"
+#define DEVICES_SERVICE_PATH "/rest/devices"
 
 class DemoSettings {
  public:
@@ -23,11 +24,12 @@ class DemoProject : public AdminSettingsService<DemoSettings> {
   ~DemoProject();
 
   void loop();
-
+  
  private:
   unsigned long _lastBlink = 0;
   AsyncWebSocket ws;
   AsyncWebSocketClient* wsClient;
+  void devicesList(AsyncWebServerRequest* request);
 
  protected:
   void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
