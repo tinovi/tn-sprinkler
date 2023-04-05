@@ -41,16 +41,14 @@ class SettingsPersistence {
 
     serializeJson(jsonDocument, configFile);
     configFile.close();
+    log_i("readFromFS... %s\n",_filePath);
 
     return true;
   }
 
   void readFromFS() {
     File configFile = _fs->open(_filePath, "r");
-    log_i("readFromFS...\n");
-while(configFile.available()){
-    Serial.write(configFile.read());
-}
+    log_i("readFromFS... %s\n",_filePath);
     // use defaults if no config found
     if (configFile) {
       // Protect against bad data uploaded to file system

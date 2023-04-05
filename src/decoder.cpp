@@ -324,14 +324,11 @@ uint8_t hexCharacterStringToBytes(uint8_t *byteArray, const char *hexString)
 
 HTTPClient http;
 
-int start_http_json(const String& devid, const String& url, const String& auth) {
+int start_http_json(String output, const String& devid, const String& url, const String& auth) {
 	if(url == nullptr || url.length() == 0){
 		return 0;
 	}
 
-	String output="";
-	serializeJson(data, output);
-	log_i("Sending %s\n",output.c_str());
 	http.begin(url); //Specify destination for HTTP request
 	http.addHeader("Content-Type", "application/json");  //Specify content-type header
 	if(url != nullptr && auth.length() > 0){

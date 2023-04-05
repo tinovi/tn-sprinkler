@@ -32,6 +32,7 @@ typedef struct {
     uint32_t Eui;
     uint32_t up_cnt; 
     long lastTime;
+    uint32_t time;
     int rssi;
     int snr;
     uint8_t bat;
@@ -67,6 +68,24 @@ typedef struct {
 
 } DataMag;
 
+
+typedef struct
+{
+  uint32_t sensEui;  // sensor EUI
+  uint8_t switchNum;  // switch number
+  uint32_t hours;  //bit hours of day operational
+  uint8_t weekDays;  // bit week days operational
+  int16_t onVal;   /**Sensor VWC value to switch On*/
+  int16_t offVal;   /**Sensor VWC value to switch off*/
+  uint8_t onTimeHour; /**Trigger on time*/
+  uint8_t onTimeMinute; /**Trigger on time*/
+  uint8_t onTimeWkDay; /**Trigger on time*/
+  uint16_t maxTimeSec; /**Max time active seconds*/
+  uint32_t onTime;  //last switched on
+  String name;
+} Trigger_t;
+
+
 #define DEMO_SLOT_NUMBER 50
 
 extern DataMag Sensors[DEMO_SLOT_NUMBER];
@@ -77,6 +96,6 @@ extern int SlotCounter;
 uint8_t hexCharacterStringToBytes(uint8_t *byteArray, const char *hexString);
 void decodeUplink(int cnum);
 void generateStr(int cnum);
-int start_http_json(const String& devid, const String& url, const String& auth);
+int start_http_json(String output, const String& devid, const String& url, const String& auth);
 char *getMacAddress();
 #endif /* __TNDECODER_H__ */

@@ -1,4 +1,5 @@
 {
   "url":  "https://tinovi.com/api/v1/gw/json",
-  "auth":""
+  "auth":"",
+  "trigers":[]
 }

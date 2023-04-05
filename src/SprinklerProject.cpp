@@ -1,9 +1,10 @@
-#include <DemoProject.h>
+#include <SprinklerProject.h>
 #include <ESPAsyncWebServer.h>
 #include <functional>
 #include "decoder.h"
+#include <lwip/apps/sntp.h>
 
-DemoProject::DemoProject(AsyncWebServer* server, FS* fs, SecurityManager* securityManager) :
+SprinklerProject::SprinklerProject(AsyncWebServer* server, FS* fs, SecurityManager* securityManager) :
     AdminSettingsService(server, fs, securityManager, DEMO_SETTINGS_PATH, DEMO_SETTINGS_FILE),
     ws("/ws") {
   // pinMode(BLINK_LED, OUTPUT);
@@ -13,33 +14,55 @@ DemoProject::DemoProject(AsyncWebServer* server, FS* fs, SecurityManager* securi
     // configure LED PWM functionalitites
   
   //Wensockets handle
-   ws.onEvent(std::bind(&DemoProject::onWsEvent, this, std::placeholders::_1, std::placeholders::_2, 
+   ws.onEvent(std::bind(&SprinklerProject::onWsEvent, this, std::placeholders::_1, std::placeholders::_2, 
                         std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
    server->addHandler(&ws);
+
+   server->on(DEVICES_SERVICE_PATH,
+             HTTP_GET,
+             securityManager->wrapRequest(std::bind(&SprinklerProject::devicesList, this, std::placeholders::_1),
+                                          AuthenticationPredicates::IS_AUTHENTICATED));
+
 }
 
-DemoProject::~DemoProject() {
+SprinklerProject::~SprinklerProject() {
 }
 
+void SprinklerProject::devicesList(AsyncWebServerRequest* request) {
+  AsyncJsonResponse* response = new AsyncJsonResponse(false, MAX_ESP_STATUS_SIZE);
+  JsonObject root = response->getRoot();
+  JsonArray array = root.createNestedArray("list");
+  for (int i = 0; i < SlotCounter;i++){
+	    JsonObject object = array.createNestedObject();
+      object["devid"] = Sensors[i].devid;
+      object["rssi"] = Sensors[i].rssi;
+      object["bat"] = Sensors[i].bat;
+      object["time"] = Sensors[i].time;
+	}
+  response->setLength();
+  request->send(response);
+  log_i("devicesList sent %i \n",SlotCounter);
 
-void DemoProject::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
+}
+void SprinklerProject::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
 
   if(type == WS_EVT_CONNECT){
 
     log_i("Websocket client connection received \n");
-    const String &token = ((const AsyncWebServerRequest *) (arg))->arg("Authorization");
-    if (token.startsWith(AUTHORIZATION_HEADER_PREFIX)) {
-       Authentication authentication = ((SecuritySettingsService *)(this->_securityManager))->authenticateJWT(token.substring(AUTHORIZATION_HEADER_PREFIX_LEN));
-       if (!getAuthenticationPredicate()(authentication)) {
-         log_i("Unauthorized invalid token \n");
-         client->close(401,"Invalid Token");  
-       }else{
-        wsClient = client;
-       }
-    }else{
-      log_i("Unauthorized token missing \n");
-      client->close(401,"Invalid Token"); 
-    }
+    wsClient = client;
+    // const String &token = ((const AsyncWebServerRequest *) (arg))->arg("Authorization");
+    // if (token.startsWith(AUTHORIZATION_HEADER_PREFIX)) {
+    //    Authentication authentication = ((SecuritySettingsService *)(this->_securityManager))->authenticateJWT(token.substring(AUTHORIZATION_HEADER_PREFIX_LEN));
+    //    if (!getAuthenticationPredicate()(authentication)) {
+    //      log_i("Unauthorized invalid token \n");
+    //      client->close(401,"Invalid Token");  
+    //    }else{
+    //     wsClient = client;
+    //    }
+    // }else{
+    //   log_i("Unauthorized token missing \n");
+    //   client->close(401,"Invalid Token"); 
+    // }
   } else if(type == WS_EVT_DISCONNECT){
     wsClient = nullptr;
     log_i("Client disconnected \n");
@@ -58,7 +81,7 @@ void DemoProject::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * clie
   }
 }
 
-void DemoProject::send(const char * message){
+void SprinklerProject::send(const char * message){
   if(wsClient != nullptr && wsClient->canSend()) {
     wsClient->text(message);
   }
@@ -71,7 +94,7 @@ void DemoProject::send(const char * message){
 
 	std::string rxd;
 
-	void DemoProject::loop(){
+	void SprinklerProject::loop(){
 		for (; Serial.available(); ) {
 			rxd+=Serial.read();
 		}
@@ -92,6 +115,7 @@ void DemoProject::send(const char * message){
 				if(snum>-1){
 					rxd.substr(lp+1, pp - lp - 1).copy(Sensors[snum].dataStr, rxd.length() - lp - 1);
 					Sensors[snum].lastTime = millis();
+          Sensors[snum].time = time(nullptr);
 					Sensors[snum].clen =  pp - lp - 1;
 					Sensors[snum].dataStr[Sensors[snum].clen] = '\0';
 					devid.copy(Sensors[snum].devid,8);
@@ -101,7 +125,11 @@ void DemoProject::send(const char * message){
 					decodeUplink(snum);
 					if(WiFi.status() == WL_CONNECTED){
 						generateStr(snum);
-						start_http_json(Sensors[snum].devid, _settings.url, _settings.auth);
+	          String output="";
+	          serializeJson(data, output);
+	          log_i("Sending %s\n",output.c_str());
+            send(output.c_str());
+						start_http_json(output, Sensors[snum].devid, _settings.url, _settings.auth);
 						Sensors[snum].hasData = false;
 					}else{
 						Sensors[snum].hasData = true;
@@ -116,12 +144,12 @@ void DemoProject::send(const char * message){
 
 
 
-void DemoProject::readFromJsonObject(JsonObject& root) {
+void SprinklerProject::readFromJsonObject(JsonObject& root) {
   _settings.url = root["url"] | DEFFAULT_URL;
   _settings.auth = root["auth"]| "";
 }
 
-void DemoProject::writeToJsonObject(JsonObject& root) {
+void SprinklerProject::writeToJsonObject(JsonObject& root) {
   root["url"] = _settings.url;
   root["auth"] = _settings.auth;
 }

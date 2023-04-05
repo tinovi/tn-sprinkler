@@ -15,3 +15,4 @@ export const VERIFY_AUTHORIZATION_ENDPOINT = ENDPOINT_ROOT + "verifyAuthorizatio
 export const SECURITY_SETTINGS_ENDPOINT = ENDPOINT_ROOT + "securitySettings";
 export const RESTART_ENDPOINT = ENDPOINT_ROOT + "restart";
 
+export const LIST_DEVICES_ENDPOINT = ENDPOINT_ROOT + "devices";

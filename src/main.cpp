@@ -1,4 +1,4 @@
-#include <DemoProject.h>
+#include <SprinklerProject.h>
 #include <ESP8266React.h>
 #include <FS.h>
 #include "decoder.h"
@@ -6,7 +6,7 @@
 
 AsyncWebServer server(80);
 ESP8266React esp8266React(&server, &SPIFFS);
-DemoProject demoProject = DemoProject(&server, &SPIFFS, esp8266React.getSecurityManager());
+SprinklerProject sprinklerProject = SprinklerProject(&server, &SPIFFS, esp8266React.getSecurityManager());
 
 void setup() {
   	mac = String(getMacAddress());
@@ -26,7 +26,7 @@ void setup() {
   esp8266React.begin();
 
   // start the demo project
-  demoProject.begin();
+  sprinklerProject.begin();
 
   // start the server
   server.begin();
@@ -37,5 +37,5 @@ void loop() {
   esp8266React.loop();
 
   // run the demo project's loop function
-  demoProject.loop();
+  sprinklerProject.loop();
 }

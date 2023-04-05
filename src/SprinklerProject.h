@@ -1,27 +1,29 @@
-#ifndef DemoProject_h
-#define DemoProject_h
+#ifndef SprinklerProject_h
+#define SprinklerProject_h
 
 #include <AdminSettingsService.h>
 #include <ESP8266React.h>
+#include "decoder.h"
 
 #define BLINK_LED 2
 #define MAX_DELAY 1000
 
 #define DEFFAULT_URL "https://tinovi.com/api/v1/gw/json"
-#define DEMO_SETTINGS_FILE "/config/demoSettings.json"
-#define DEMO_SETTINGS_PATH "/rest/demoSettings"
+#define DEMO_SETTINGS_FILE "/config/sprinklerSettings.json"
+#define DEMO_SETTINGS_PATH "/rest/sprinklerSettings"
 #define DEVICES_SERVICE_PATH "/rest/devices"
 
-class DemoSettings {
+class SprinklerSettings {
  public:
     String url;
     String auth;
+    Trigger_t triggers[100];
 };
 
-class DemoProject : public AdminSettingsService<DemoSettings> {
+class SprinklerProject : public AdminSettingsService<SprinklerSettings> {
  public:
-  DemoProject(AsyncWebServer* server, FS* fs, SecurityManager* securityManager);
-  ~DemoProject();
+  SprinklerProject(AsyncWebServer* server, FS* fs, SecurityManager* securityManager);
+  ~SprinklerProject();
 
   void loop();
   
