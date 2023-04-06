@@ -1,5 +1,17 @@
 {
   "url":  "https://tinovi.com/api/v1/gw/json",
   "auth":"",
-  "trigers":[]
+  "triggers":[{
+    "name": "test",
+    "sensEui": 0,
+    "switchNum": 0,
+    "weekDays": 0,
+    "onVal": 0,
+    "offVal": 0,
+    "onTimeHour": 0,
+    "onTimeMinute": 0,
+    "onTimeWkDay": 0,
+    "maxTimeSec": 0,
+    "onTime": 0
+  }]
 }

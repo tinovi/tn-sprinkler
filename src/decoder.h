@@ -69,23 +69,6 @@ typedef struct {
 } DataMag;
 
 
-typedef struct
-{
-  uint32_t sensEui;  // sensor EUI
-  uint8_t switchNum;  // switch number
-  uint32_t hours;  //bit hours of day operational
-  uint8_t weekDays;  // bit week days operational
-  int16_t onVal;   /**Sensor VWC value to switch On*/
-  int16_t offVal;   /**Sensor VWC value to switch off*/
-  uint8_t onTimeHour; /**Trigger on time*/
-  uint8_t onTimeMinute; /**Trigger on time*/
-  uint8_t onTimeWkDay; /**Trigger on time*/
-  uint16_t maxTimeSec; /**Max time active seconds*/
-  uint32_t onTime;  //last switched on
-  String name;
-} Trigger_t;
-
-
 #define DEMO_SLOT_NUMBER 50
 
 extern DataMag Sensors[DEMO_SLOT_NUMBER];

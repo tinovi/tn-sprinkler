@@ -44,7 +44,7 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
         onTimeMinute: 0,
         onTimeWkDay: 0,
         maxTimeSec: 0,
-        onTime: 0,
+        onTime: 0
       }
     });
   };

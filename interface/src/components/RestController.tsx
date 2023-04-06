@@ -95,6 +95,7 @@ export function restController<D, P extends RestControllerProps<D>>(endpointUrl:
           }
           throw Error("Invalid status code: " + response.status);
         }).then(json => {
+          console.log("json:"+JSON.stringify(json));
           this.setState({ data: json, loading: false })
         }).catch(error => {
           const errorMessage = error.message || "Unknown error";

@@ -36,7 +36,7 @@ void SprinklerProject::devicesList(AsyncWebServerRequest* request) {
 	}
   response->setLength();
   request->send(response);
-  Serial.println("devicesList sent "+SlotCounter);
+  // Serial.println("devicesList sent "+SlotCounter);
 
 }
 void SprinklerProject::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
@@ -142,9 +142,22 @@ void SprinklerProject::send(const char * message){
 void SprinklerProject::readFromJsonObject(JsonObject& root) {
   _settings.url = root["url"] | DEFFAULT_URL;
   _settings.auth = root["auth"]| "";
+    // users
+  _settings.triggers.clear();
+  if (root["triggers"].is<JsonArray>()) {
+    for (JsonVariant trigger : root["triggers"].as<JsonArray>()) {
+     _settings.triggers.push_back(Trigger_t(trigger["name"], trigger["sensEui"]));
+    }
+  }
 }
 
 void SprinklerProject::writeToJsonObject(JsonObject& root) {
   root["url"] = _settings.url;
   root["auth"] = _settings.auth;
+   JsonArray triggers = root.createNestedArray("triggers");
+  for (Trigger_t _trigger : _settings.triggers) {
+    JsonObject trigger = triggers.createNestedObject();
+    trigger["name"] = _trigger.name;
+  }
+
 }
