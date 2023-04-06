@@ -5,13 +5,8 @@
 #include <lwip/apps/sntp.h>
 
 SprinklerProject::SprinklerProject(AsyncWebServer* server, FS* fs, SecurityManager* securityManager) :
-    AdminSettingsService(server, fs, securityManager, DEMO_SETTINGS_PATH, DEMO_SETTINGS_FILE),
+    AdminSettingsService(server, fs, securityManager, SPRINKLER_SETTINGS_PATH, SPRINKLER_SETTINGS_FILE),
     ws("/ws") {
-  // pinMode(BLINK_LED, OUTPUT);
-  
-  // ledcSetup(0, 5000, 8);
-  // ledcAttachPin(BLINK_LED, 0);
-    // configure LED PWM functionalitites
   
   //Wensockets handle
    ws.onEvent(std::bind(&SprinklerProject::onWsEvent, this, std::placeholders::_1, std::placeholders::_2, 
@@ -31,7 +26,7 @@ SprinklerProject::~SprinklerProject() {
 void SprinklerProject::devicesList(AsyncWebServerRequest* request) {
   AsyncJsonResponse* response = new AsyncJsonResponse(false, MAX_ESP_STATUS_SIZE);
   JsonObject root = response->getRoot();
-  JsonArray array = root.createNestedArray("list");
+  JsonArray array = root.createNestedArray("devices");
   for (int i = 0; i < SlotCounter;i++){
 	    JsonObject object = array.createNestedObject();
       object["devid"] = Sensors[i].devid;
@@ -41,7 +36,7 @@ void SprinklerProject::devicesList(AsyncWebServerRequest* request) {
 	}
   response->setLength();
   request->send(response);
-  log_i("devicesList sent %i \n",SlotCounter);
+  Serial.println("devicesList sent "+SlotCounter);
 
 }
 void SprinklerProject::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){

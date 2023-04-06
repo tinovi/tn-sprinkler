@@ -9,8 +9,8 @@
 #define MAX_DELAY 1000
 
 #define DEFFAULT_URL "https://tinovi.com/api/v1/gw/json"
-#define DEMO_SETTINGS_FILE "/config/sprinklerSettings.json"
-#define DEMO_SETTINGS_PATH "/rest/sprinklerSettings"
+#define SPRINKLER_SETTINGS_FILE "/config/sprinklerSettings.json"
+#define SPRINKLER_SETTINGS_PATH "/rest/sprinklerSettings"
 #define DEVICES_SERVICE_PATH "/rest/devices"
 
 class SprinklerSettings {

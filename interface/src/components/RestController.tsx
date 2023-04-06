@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {}  from 'react';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import { redirectingAuthorizedFetch } from '../authentication';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';

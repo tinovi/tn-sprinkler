@@ -20,13 +20,13 @@ class SprinklerProject extends Component<RouteComponentProps> {
     return (
       <MenuAppBar sectionTitle="Sprinkler controller">
         <Tabs value={this.props.match.url} onChange={this.handleTabChange} variant="fullWidth">
-          <Tab value={`/${PROJECT_PATH}/sprinkler/devices`} label="Device List" />
-          <Tab value={`/${PROJECT_PATH}/sprinkler/controller`} label="Demo Controller" />
+          <Tab value={`/${PROJECT_PATH}/devices`} label="Devices" />
+          <Tab value={`/${PROJECT_PATH}/triggers`} label="Triggers" />
         </Tabs>
         <Switch>
-          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/sprinkler/devices`} component={DeviceInfoController} />
-          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/sprinkler/controller`} component={TriggerController} />
-          <Redirect to={`/${PROJECT_PATH}/sprinkler/information`} />
+          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/devices`} component={DeviceInfoController} />
+          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/triggers`} component={TriggerController} />
+          <Redirect to={`/${PROJECT_PATH}/devices`} />
         </Switch>
       </MenuAppBar>
     )

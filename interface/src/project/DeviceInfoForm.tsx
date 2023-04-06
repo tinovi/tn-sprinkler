@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { ValidatorForm } from 'react-material-ui-form-validator';
-import { Table, TableBody, TableCell, TableHead, TableFooter, TableRow } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { RestFormProps, FormActions, FormButton } from '../components';
 import { DerviceInfoList } from './types';
 import { DerviceInfo } from './types';

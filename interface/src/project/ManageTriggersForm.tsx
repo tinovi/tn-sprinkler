@@ -69,6 +69,7 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
 
   cancelEditingTrigger = () => {
     this.setState({
+      creating: false,
       trigger: undefined
     });
   }
@@ -81,17 +82,18 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
       triggers.push(trigger);
       this.props.setData({ ...data, triggers });
       this.setState({
+        creating: false,
         trigger: undefined
       });
     }
   };
 
   handleUserValueChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ trigger: { ...this.state.trigger!, [name]: event.target.value } });
+    this.setState({creating: false, trigger: { ...this.state.trigger!, [name]: event.target.value } });
   };
 
   handleUserCheckboxChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ trigger: { ...this.state.trigger!, [name]: event.target.checked } });
+    this.setState({creating: false, trigger: { ...this.state.trigger!, [name]: event.target.checked } });
   }
 
   onSubmit = () => {

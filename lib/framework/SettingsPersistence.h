@@ -12,7 +12,7 @@
  * files this could be made configurable fairly simply, it's exposed on
  * AsyncJsonWebHandler with a setter.
  */
-#define MAX_SETTINGS_SIZE 1024
+#define MAX_SETTINGS_SIZE 2024
 
 /*
  * Mixin for classes which need to save settings to/from a file on the the file system as JSON.

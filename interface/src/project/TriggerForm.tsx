@@ -1,7 +1,7 @@
 import React, { RefObject } from 'react';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Checkbox } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
 
 import { FormButton } from '../components';
 
@@ -30,7 +30,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
   }
 
   render() {
-    const { trigger, creating, handleValueChange, handleCheckboxChange, onDoneEditing, onCancelEditing } = this.props;
+    const { trigger, creating, handleValueChange, onDoneEditing, onCancelEditing } = this.props;
     return (
       <ValidatorForm onSubmit={onDoneEditing} ref={this.formRef}>
         <Dialog onClose={onCancelEditing} aria-labelledby="user-form-dialog-title" open={true}>

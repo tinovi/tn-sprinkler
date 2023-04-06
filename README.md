@@ -1,5 +1,11 @@
 Project isa based on [ESP8266 React](https://github.com/mirecta/ESP32-react)
 
+
+     "overrides": {
+       "babel__traverse@7.18.3": {
+         "babel__traverse": "7.18.2"
+       }
+     },
 # ESP8266 React
 
 [![Build Status](https://travis-ci.org/rjwats/esp8266-react.svg?branch=master)](https://travis-ci.org/rjwats/esp8266-react)
