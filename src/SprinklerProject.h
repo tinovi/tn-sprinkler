@@ -18,15 +18,14 @@ class Trigger_t {
  public:
   uint32_t sensEui;  // sensor EUI
   uint8_t switchNum;  // switch number
-  uint32_t hours;  //bit hours of day operational
+  uint8_t coil;  // coil number
   uint8_t weekDays;  // bit week days operational
+  uint32_t hours;  //bit hours of day operational
+  uint8_t minute; /**Trigger on time minute starting 1-60*/
   int16_t onVal;   /**Sensor VWC value to switch On*/
   int16_t offVal;   /**Sensor VWC value to switch off*/
-  uint8_t onTimeHour; /**Trigger on time*/
-  uint8_t onTimeMinute; /**Trigger on time*/
-  uint8_t onTimeWkDay; /**Trigger on time*/
   uint16_t maxTimeSec; /**Max time active seconds*/
-  uint32_t onTime;  //last switched on
+  time_t onTime;  //last switched on
   String name;
 
  public:
@@ -55,7 +54,9 @@ class SprinklerProject : public AdminSettingsService<SprinklerSettings> {
   AsyncWebSocket ws;
   AsyncWebSocketClient* wsClient;
   void devicesList(AsyncWebServerRequest* request);
-
+  void readData();
+  void checkTrigger();
+  void triggerOutput(Trigger_t *_trigger, uint8_t status);
  protected:
   void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
   void readFromJsonObject(JsonObject& root);

@@ -37,6 +37,7 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
         name: "",
         sensEui: 0,
         switchNum: 0,
+        coil: 0,
         weekDays: 0,
         onVal: 0,
         offVal: 0,

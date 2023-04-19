@@ -3,6 +3,7 @@
 #include <functional>
 #include "decoder.h"
 #include <lwip/apps/sntp.h>
+#include "time.h"
 
 SprinklerProject::SprinklerProject(AsyncWebServer* server, FS* fs, SecurityManager* securityManager) :
     AdminSettingsService(server, fs, securityManager, SPRINKLER_SETTINGS_PATH, SPRINKLER_SETTINGS_FILE),
@@ -65,11 +66,12 @@ void SprinklerProject::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient *
 
     data[len-1] = '\0';
     String dataIn((char*) data);
-    int separator = dataIn.indexOf('|');
-    String key = dataIn.substring(0,separator);
-    String value = dataIn.substring(separator + 1);
+    int pipe = dataIn.indexOf('|');
+    String key = dataIn.substring(0,pipe);
+    String value = dataIn.substring(pipe + 1);
+    int 
     log_i("Data received: %s   %s \n", key, value);
-    if (key = "blink_speed"){
+    if (key = "switch"){
        
        // ledcWrite(0, ivalue);
     }
@@ -88,8 +90,7 @@ void SprinklerProject::send(const char * message){
 //AT+DOWN=051c3296:010000001E
 
 	std::string rxd;
-
-	void SprinklerProject::loop(){
+	void SprinklerProject::readData(){
 		for (; Serial.available(); ) {
 			rxd+=Serial.read();
 		}
@@ -133,7 +134,67 @@ void SprinklerProject::send(const char * message){
 				}
 			}
 			rxd = "";
-		}
+		}  
+  }
+
+
+//   class Trigger_t {
+//  public:
+//   uint32_t sensEui;  // sensor EUI
+//   uint8_t switchNum;  // switch number
+//   uint8_t coil;  // coil number
+//   uint8_t weekDays;  // bit week days operational
+//   uint32_t hours;  //bit hours of day operational
+//   uint8_t minute; /**Trigger on time*/
+//   int16_t onVal;   /**Sensor VWC value to switch On*/
+//   int16_t offVal;   /**Sensor VWC value to switch off*/
+//   uint16_t maxTimeSec; /**Max time active seconds*/
+//   uint32_t onTime;  //last switched on
+//   String name;
+
+//  public:
+//    Trigger_t(String name, uint32_t sensEui) : name(name), sensEui(sensEui) {
+//    }
+// };
+
+  void SprinklerProject::triggerOutput(Trigger_t *_trigger, uint8_t status){
+
+  }
+  
+  #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
+	
+  void SprinklerProject::checkTrigger(){
+    struct tm timeinfo;
+    time_t now = time(nullptr);
+
+    ///
+    if(!getLocalTime(&timeinfo)){
+      log_i(“Failed to obtain time”);
+      return;
+    }
+    for (Trigger_t _trigger : _settings.triggers) {
+      /// check if running, an its time to switch off
+      if(_trigger.onTime && _trigger.maxTimeSec && (now - _trigger.onTime)>_trigger.maxTimeSec){
+        triggerOutput(&_trigger, 0);
+        continue;
+      }
+      //not triggered and time active
+      if (_trigger.onTime == 0 && CHECK_BIT(_trigger.weekDays, timeinfo.tm_wday) && CHECK_BIT(_trigger.hours, timeinfo.tm_hour)) 
+      {
+      
+        if (_trigger.minute && _trigger.minute == (timeinfo.tm_min + 1)) 
+        {
+          triggerOutput(&_trigger, 1);
+          continue;
+        }      
+      }      
+    }
+  }
+	
+  void SprinklerProject::loop(){
+    delay(100);
+    readData();
+    checkTrigger();
 
 	}
 

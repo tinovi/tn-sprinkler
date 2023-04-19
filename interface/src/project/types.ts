@@ -16,6 +16,7 @@ export interface Trigger {
   name: string;
   sensEui: number;
   switchNum: number;
+  coil: number;
   weekDays: number;
   onVal: number;
   offVal: number;
