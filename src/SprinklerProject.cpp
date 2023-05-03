@@ -69,7 +69,6 @@ void SprinklerProject::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient *
     int pipe = dataIn.indexOf('|');
     String key = dataIn.substring(0,pipe);
     String value = dataIn.substring(pipe + 1);
-    int 
     log_i("Data received: %s   %s \n", key, value);
     if (key = "switch"){
        
@@ -141,7 +140,7 @@ void SprinklerProject::send(const char * message){
 //   class Trigger_t {
 //  public:
 //   uint32_t sensEui;  // sensor EUI
-//   uint8_t switchNum;  // switch number
+//   uint8_t switchName;  // switch name
 //   uint8_t coil;  // coil number
 //   uint8_t weekDays;  // bit week days operational
 //   uint32_t hours;  //bit hours of day operational
@@ -207,10 +206,16 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
   _settings.triggers.clear();
   if (root["triggers"].is<JsonArray>()) {
     for (JsonVariant trigger : root["triggers"].as<JsonArray>()) {
-     _settings.triggers.push_back(Trigger_t(trigger["name"], trigger["sensEui"]));
+     _settings.triggers.push_back(Trigger_t(trigger["name"], trigger["sensEui"], trigger["switchName"], trigger["coil"], trigger["weekDays"], trigger["hours"], trigger["minute"], trigger["onVal"], trigger["offVal"], trigger["maxTimeSec"], trigger["onTime"]));
     }
   }
+  if (root["switches"].is<JsonArray>()) {
+    for (JsonVariant switcht : root["switches"].as<JsonArray>()) {
+     _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["coils"], switcht["name"]));
+    }
+  }//type(type),address(address),coils(coils), name(name)
 }
+
 
 void SprinklerProject::writeToJsonObject(JsonObject& root) {
   root["url"] = _settings.url;
@@ -219,6 +224,24 @@ void SprinklerProject::writeToJsonObject(JsonObject& root) {
   for (Trigger_t _trigger : _settings.triggers) {
     JsonObject trigger = triggers.createNestedObject();
     trigger["name"] = _trigger.name;
+    trigger["sensEui"] = _trigger.sensEui;
+    trigger["switchName"] = _trigger.switchName;
+    trigger["coil"] = _trigger.coil;
+    trigger["weekDays"] = _trigger.weekDays;
+    trigger["hours"] = _trigger.hours;
+    trigger["minute"] = _trigger.minute;
+    trigger["onVal"] = _trigger.onVal;
+    trigger["offVal"] = _trigger.offVal;
+    trigger["maxTimeSec"] = _trigger.maxTimeSec;
+    trigger["onTime"] = _trigger.onTime;
+  }
+   JsonArray switches = root.createNestedArray("triggers");
+  for (Switch_t _switch : _settings.switches) {
+    JsonObject switcht = switches.createNestedObject();
+    switcht["name"] = _switch.name;
+    switcht["type"] = _switch.type;
+    switcht["address"] = _switch.address;
+    switcht["coils"] = _switch.coils;
   }
 
 }

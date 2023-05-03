@@ -6,7 +6,7 @@
 
 
 SWI2C::SWI2C(){
-  addr=0x55;
+  addr=0x55; //85 dec
 }
 
 int SWI2C::init(int address, TwoWire *the_wire){
@@ -80,7 +80,7 @@ int SWI2C::setReg(byte reg){
   int SWI2C::setCoils(uint16_t coils){
     _wire->beginTransmission(addr);
     _wire->write(REG_SET);
-    uint8_t *pointer = (uint8_t *)&valueUs;
+    uint8_t *pointer = (uint8_t *)&coils;
     _wire->write((uint8_t *)&pointer[0],1);
     _wire->write((uint8_t *)&pointer[1],1);
     _wire->endTransmission();

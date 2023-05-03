@@ -15,7 +15,7 @@ export interface DerviceInfo {
 export interface Trigger {
   name: string;
   sensEui: number;
-  switchNum: number;
+  switchName: string;
   coil: number;
   weekDays: number;
   onVal: number;
@@ -27,9 +27,17 @@ export interface Trigger {
   onTime: number;
 }
 
-export interface TriggerSettings {
+export interface Switch {
+  name: string;
+  coils: number;
+  type: number;
+  address: number;
+}
+
+export interface SprinklerSettings {
   url: string;
   auth: string;
   triggers: Trigger[];
+  switches: Switch[];
 }
 

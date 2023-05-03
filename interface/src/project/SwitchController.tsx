@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import {restController, RestControllerProps, RestFormLoader, SectionContent } from '../components';
 import { SPRINKLER_SETTINGS_ENDPOINT } from '../api';
 
-import ManageTriggersForm from './ManageTriggersForm';
+import ManageSwitchForm from './ManageSwitchForm';
 import { SprinklerSettings } from './types';
 
-type TriggerControllerProps = RestControllerProps<SprinklerSettings>;
+type SwitchControllerProps = RestControllerProps<SprinklerSettings>;
 
-class TriggerController extends Component<TriggerControllerProps> {
+class SwitchController extends Component<SwitchControllerProps> {
 
   componentDidMount() {
     this.props.loadData();
@@ -16,10 +16,10 @@ class TriggerController extends Component<TriggerControllerProps> {
 
   render() {
     return (
-      <SectionContent title="Trigger list" titleGutter>
+      <SectionContent title="Switch list" titleGutter>
         <RestFormLoader
           {...this.props}
-          render={formProps => <ManageTriggersForm {...formProps} />}
+          render={formProps => <ManageSwitchForm {...formProps} />}
         />
       </SectionContent>
     )
@@ -27,4 +27,4 @@ class TriggerController extends Component<TriggerControllerProps> {
 
 }
 
-export default restController(SPRINKLER_SETTINGS_ENDPOINT, TriggerController);
+export default restController(SPRINKLER_SETTINGS_ENDPOINT, SwitchController);

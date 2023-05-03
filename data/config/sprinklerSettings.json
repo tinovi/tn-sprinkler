@@ -4,7 +4,7 @@
   "triggers":[{
     "name": "test",
     "sensEui": 0,
-    "switchNum": 0,
+    "switchName": "i2cPLC1",
     "weekDays": 0,
     "onVal": 0,
     "offVal": 0,
@@ -13,5 +13,11 @@
     "onTimeWkDay": 0,
     "maxTimeSec": 0,
     "onTime": 0
+  }],
+  "switches":[{
+    "name": "i2cPLC1",
+    "coils": 6,
+    "address": 85,
+    "type": 1
   }]
 }

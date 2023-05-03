@@ -28,6 +28,20 @@ class TriggerForm extends React.Component<TriggerFormProps> {
   submit = () => {
     this.formRef.current.submit();
   }
+  // export interface Trigger {
+  //   name: string;
+  //   sensEui: number;
+  //   switchName: string;
+  //   coil: number;
+  //   weekDays: number;
+  //   onVal: number;
+  //   offVal: number;
+  //   onTimeHour: number;
+  //   onTimeMinute: number;
+  //   onTimeWkDay: number;
+  //   maxTimeSec: number;
+  //   onTime: number;
+  // }
 
   render() {
     const { trigger, creating, handleValueChange, onDoneEditing, onCancelEditing } = this.props;
@@ -39,13 +53,46 @@ class TriggerForm extends React.Component<TriggerFormProps> {
             <TextValidator
               validators={creating ? ['required', 'uniqueTriggername', 'matchRegexp:^[a-zA-Z0-9_\\.]{1,24}$'] : []}
               errorMessages={creating ? ['Triggername is required', "Triggername already exists", "Must be 1-24 characters: alpha numeric, '_' or '.'"] : []}
-              name="username"
+              name="  "
               label="Triggername"
               fullWidth
               variant="outlined"
               value={trigger.name}
               disabled={!creating}
-              onChange={handleValueChange('name')}
+              margin="normal"
+            />
+             <TextValidator
+              validators={['required']}
+              errorMessages={['Coil is required']}
+              name="tr_coil"
+              label="Coil"
+              fullWidth
+              variant="outlined"
+              value={trigger.coil}
+              margin="normal"
+            />
+             <TextValidator
+              name="tr_onVal"
+              label="On val"
+              fullWidth
+              variant="outlined"
+              value={trigger.onVal}
+              margin="normal"
+            />
+             <TextValidator
+              name="tr_offVal"
+              label="Off val"
+              fullWidth
+              variant="outlined"
+              value={trigger.offVal}
+              margin="normal"
+            />
+             <TextValidator
+              name="tr_maxTimeSec"
+              label="Max time sec"
+              fullWidth
+              variant="outlined"
+              value={trigger.maxTimeSec}
               margin="normal"
             />
           </DialogContent>

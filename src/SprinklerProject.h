@@ -17,7 +17,7 @@
 class Trigger_t {
  public:
   uint32_t sensEui;  // sensor EUI
-  uint8_t switchNum;  // switch number
+  String switchName;  // switch number
   uint8_t coil;  // coil number
   uint8_t weekDays;  // bit week days operational
   uint32_t hours;  //bit hours of day operational
@@ -31,8 +31,23 @@ class Trigger_t {
  public:
    Trigger_t(String name, uint32_t sensEui) : name(name), sensEui(sensEui) {
    }
+   Trigger_t(String name, uint32_t sensEui, String switchName, uint8_t coil, uint8_t weekDays, uint32_t hours, uint8_t minute, int16_t onVal, int16_t offVal, uint16_t maxTimeSec, time_t onTime) 
+   : name(name), sensEui(sensEui), switchName(switchName), coil(coil), weekDays(weekDays), hours(hours), minute(minute), onVal(onVal), maxTimeSec(maxTimeSec), onTime(onTime){
+   }
 };
 
+class Switch_t {
+ public:
+  uint8_t type;  // 1-i2c , 2 - rs
+  int16_t address;   // i2c or rs addrress
+  uint8_t coils;  // coils count
+  String name;
+
+ public:
+   Switch_t(uint8_t type, int16_t address, uint8_t coils, String name) 
+      : type(type),address(address),coils(coils), name(name) {
+   }
+};
 
 
 class SprinklerSettings {
@@ -40,6 +55,7 @@ class SprinklerSettings {
     String url;
     String auth;
     std::list<Trigger_t> triggers;
+    std::list<Switch_t> switches;
 };
 
 class SprinklerProject : public AdminSettingsService<SprinklerSettings> {

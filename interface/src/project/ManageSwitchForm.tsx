@@ -13,39 +13,31 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { withAuthenticatedContext, AuthenticatedContextProps } from '../authentication';
 import { RestFormProps, FormActions, FormButton } from '../components';
 
-import TriggerForm from './TriggerForm';
-import { SprinklerSettings, Trigger } from './types';
+import SwitchForm from './SwitchForm';
+import { SprinklerSettings, Switch } from './types';
 
 
-type ManageUsersFormProps = RestFormProps<SprinklerSettings> & AuthenticatedContextProps;
+type ManageSwitchFormProps = RestFormProps<SprinklerSettings> & AuthenticatedContextProps;
 
-type ManageUsersFormState = {
+type ManageSwitchFormState = {
   creating: boolean;
-  trigger?: Trigger;
+  switch_?: Switch;
 }
 
-class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersFormState> {
+class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwitchFormState> {
 
-  state: ManageUsersFormState = {
+  state: ManageSwitchFormState = {
     creating: false
   };
 
-  createTrigger = () => {
+  createSwitch = () => {
     this.setState({
       creating: true,
-      trigger: {
-        name: "",
-        sensEui: 0,
-        switchName: "",
-        coil: 0,
-        weekDays: 0,
-        onVal: 0,
-        offVal: 0,
-        onTimeHour: 0,
-        onTimeMinute: 0,
-        onTimeWkDay: 0,
-        maxTimeSec: 0,
-        onTime: 0
+      switch_: {
+        name: "I2Cdefault",
+        coils: 6,
+        type: 1,
+        address: 85
       }
     });
   };
@@ -55,57 +47,56 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
   }
 
 
-  removeTrigger = (trigger: Trigger) => {
+  removeSwitch = (switch_: Switch) => {
     const { data } = this.props;
-    const triggers = data.triggers.filter(u => u.name !== trigger.name);
-    this.props.setData({ ...data, triggers });
+    const switches = data.switches.filter(u => u.name !== switch_.name);
+    this.props.setData({ ...data, switches });
   }
 
-  startEditingTrigger = (trigger: Trigger) => {
+  startEditingSwitch = (switch_: Switch) => {
     this.setState({
       creating: false,
-      trigger
+      switch_
     });
   };
 
-  cancelEditingTrigger = () => {
+  cancelEditingSwitch = () => {
     this.setState({
       creating: false,
-      trigger: undefined
+      switch_: undefined
     });
   }
 
-  doneEditingTrigger = () => {
-    const { trigger } = this.state;
-    if (trigger) {
+  doneEditingSwitch = () => {
+    const { switch_ } = this.state;
+    if (switch_) {
       const { data } = this.props;
-      const triggers = data.triggers.filter(u => u.name !== trigger.name);
-      triggers.push(trigger);
-      this.props.setData({ ...data, triggers });
+      const switches = data.switches.filter(u => u.name !== switch_.name);
+      switches.push(switch_);
+      this.props.setData({ ...data, switches });
       this.setState({
         creating: false,
-        trigger: undefined
+        switch_: undefined
       });
     }
   };
 
-  handleUserValueChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({creating: false, trigger: { ...this.state.trigger!, [name]: event.target.value } });
+  handleUserValueChange = (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({creating: false, switch_: { ...this.state.switch_!, [name]: event.target.value } });
   };
 
-  handleUserCheckboxChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({creating: false, trigger: { ...this.state.trigger!, [name]: event.target.checked } });
+  handleUserCheckboxChange = (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({creating: false, switch_: { ...this.state.switch_!, [name]: event.target.checked } });
   }
 
   onSubmit = () => {
     this.props.saveData();
-    // this.props.authenticatedContext.refresh(); onTime
+    // this.props.authenticatedContext.refresh();
   }
-  
-  
+
   render() {
     const { data, loadData } = this.props;
-    const { trigger, creating } = this.state;
+    const { switch_, creating } = this.state;
     return (
       <Fragment>
         <ValidatorForm onSubmit={this.onSubmit}>
@@ -113,40 +104,40 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell align="center">Name</TableCell>
                 <TableCell align="center">Switch</TableCell>
-                <TableCell align="center">Sensor EUI</TableCell>
-                <TableCell align="center">OnTime</TableCell>
+                <TableCell align="center">Type</TableCell>
+                <TableCell align="center">Address</TableCell>
+                <TableCell align="center">Coils</TableCell>
                 <TableCell align="center">Conditions</TableCell>
                 <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.triggers.map(trigger => (
-                <TableRow key={trigger.name}>
+              {data.switches.map(switch_ => (
+                <TableRow key={switch_.name}>
                   <TableCell component="th" scope="row">
-                    {trigger.name}
+                    {switch_.name}
                   </TableCell>
                   <TableCell align="center">
                     {
-                     trigger.switchName
+                     switch_.type
                     }
                   </TableCell>
                   <TableCell align="center">
                     {
-                     trigger.sensEui
+                     switch_.address
                     }
                   </TableCell>
                   <TableCell align="center">
                     {
-                     trigger.onTime > 0 ? new Date(trigger.onTime * 1000).toISOString() : '' 
+                     switch_.coils
                     }
                   </TableCell>
                   <TableCell align="center">
-                    <IconButton aria-label="Delete" onClick={() => this.removeTrigger(trigger)}>
+                    <IconButton aria-label="Delete" onClick={() => this.removeSwitch(switch_)}>
                       <DeleteIcon />
                     </IconButton>
-                    <IconButton aria-label="Edit" onClick={() => this.startEditingTrigger(trigger)}>
+                    <IconButton aria-label="Edit" onClick={() => this.startEditingSwitch(switch_)}>
                       <EditIcon />
                     </IconButton>
                   </TableCell>
@@ -157,8 +148,8 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
               <TableRow>
                 <TableCell colSpan={2} />
                 <TableCell align="center">
-                  <Button startIcon={<PersonAddIcon />} variant="contained" color="secondary" onClick={this.createTrigger}>
-                    Add User
+                  <Button startIcon={<PersonAddIcon />} variant="contained" color="secondary" onClick={this.createSwitch}>
+                    Add Switch
                   </Button>
                 </TableCell>
               </TableRow>
@@ -174,12 +165,12 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
           </FormActions>
         </ValidatorForm>
         {
-          trigger &&
-          <TriggerForm
-          trigger={trigger}
+          switch_ &&
+          <SwitchForm
+          switch_={switch_}
             creating={creating}
-            onDoneEditing={this.doneEditingTrigger}
-            onCancelEditing={this.cancelEditingTrigger}
+            onDoneEditing={this.doneEditingSwitch}
+            onCancelEditing={this.cancelEditingSwitch}
             handleValueChange={this.handleUserValueChange}
             handleCheckboxChange={this.handleUserCheckboxChange}
             uniqueName={this.uniqueName}
@@ -191,4 +182,4 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
 
 }
 
-export default withAuthenticatedContext(ManageUsersForm);
+export default withAuthenticatedContext(ManageSwitchForm);
