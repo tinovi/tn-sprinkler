@@ -13,26 +13,27 @@
 #define SPRINKLER_SETTINGS_PATH "/rest/sprinklerSettings"
 #define DEVICES_SERVICE_PATH "/rest/devices"
 
-
+ 
 class Trigger_t {
  public:
-  uint32_t sensEui;  // sensor EUI
-  String switchName;  // switch number
+  String name;
+  String devid;  // device 
+  String sensor;  // device sensor 
+  String switchName;  // switch 
   uint8_t coil;  // coil number
-  uint8_t weekDays;  // bit week days operational
-  uint32_t hours;  //bit hours of day operational
-  uint8_t minute; /**Trigger on time minute starting 1-60*/
+  bool weekDays[7];  // bit week days operational
+  bool hours[24];  //bit hours of day operational
   int16_t onVal;   /**Sensor VWC value to switch On*/
   int16_t offVal;   /**Sensor VWC value to switch off*/
+  uint8_t onTimeMinute;  // trigger on minute if hour
   uint16_t maxTimeSec; /**Max time active seconds*/
-  time_t onTime;  //last switched on
-  String name;
+  time_t lastOnTime;  //last switched on
 
  public:
-   Trigger_t(String name, uint32_t sensEui) : name(name), sensEui(sensEui) {
+   Trigger_t(String name, uint32_t sensEui) : name(name), devid(devid) {
    }
-   Trigger_t(String name, uint32_t sensEui, String switchName, uint8_t coil, uint8_t weekDays, uint32_t hours, uint8_t minute, int16_t onVal, int16_t offVal, uint16_t maxTimeSec, time_t onTime) 
-   : name(name), sensEui(sensEui), switchName(switchName), coil(coil), weekDays(weekDays), hours(hours), minute(minute), onVal(onVal), maxTimeSec(maxTimeSec), onTime(onTime){
+   Trigger_t(String name, String devid, String sensor, String switchName, uint8_t coil, int16_t onVal, int16_t offVal, uint8_t onTimeMinute, uint16_t maxTimeSec) 
+   : name(name), devid(devid), sensor(sensor), switchName(switchName), coil(coil), onVal(onVal), onTimeMinute(onTimeMinute), maxTimeSec(maxTimeSec){
    }
 };
 
@@ -40,15 +41,26 @@ class Switch_t {
  public:
   uint8_t type;  // 1-i2c , 2 - rs
   int16_t address;   // i2c or rs addrress
+  String name;
+
+ public:
+   Switch_t(uint8_t type, int16_t address, String name) 
+      : type(type),address(address), name(name) {
+   }
+};
+
+class SwitchType_t {
+ public:
+  uint8_t type;  // 1-i2c , 2 - rs
+  int16_t address;   // i2c or rs addrress
   uint8_t coils;  // coils count
   String name;
 
  public:
-   Switch_t(uint8_t type, int16_t address, uint8_t coils, String name) 
+   SwitchType_t(uint8_t type, int16_t address, uint8_t coils, String name) 
       : type(type),address(address),coils(coils), name(name) {
    }
 };
-
 
 class SprinklerSettings {
  public:

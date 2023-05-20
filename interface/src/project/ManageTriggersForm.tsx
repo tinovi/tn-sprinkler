@@ -29,21 +29,36 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
   state: ManageUsersFormState = {
     creating: false
   };
-
+  // export interface Trigger {
+  //   name: string;
+  //   devid: string;
+  //   sensor: string;
+  //   switchName: string;
+  //   coil: number;
+  //   weekDays: boolean[];
+  //   hours: boolean[];
+  //   onVal: number;
+  //   offVal: number;
+  //   onTimeHour: number;
+  //   onTimeMinute: number;
+  //   maxTimeSec: number;
+  //   onTime: number;
+  // }
   createTrigger = () => {
     this.setState({
       creating: true,
       trigger: {
         name: "",
-        sensEui: 0,
+        devid:"",
+        sensor:"",
         switchName: "",
         coil: 0,
-        weekDays: 0,
+        weekDays: [false, false, false, false, false, false, false],
+        hours:  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
         onVal: 0,
         offVal: 0,
         onTimeHour: 0,
         onTimeMinute: 0,
-        onTimeWkDay: 0,
         maxTimeSec: 0,
         onTime: 0
       }

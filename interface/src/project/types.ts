@@ -14,23 +14,30 @@ export interface DerviceInfo {
 
 export interface Trigger {
   name: string;
-  sensEui: number;
+  devid: string;
+  sensor: string;
   switchName: string;
   coil: number;
-  weekDays: number;
+  weekDays: boolean[];
+  hours: boolean[];
   onVal: number;
   offVal: number;
-  onTimeHour: number;
   onTimeMinute: number;
-  onTimeWkDay: number;
   maxTimeSec: number;
-  onTime: number;
+  lastOnTime: number;
 }
 
 export interface Switch {
   name: string;
-  coils: number;
+  coils: boolean[];
   type: number;
+  address: number;
+}
+
+export interface SwitchType {
+  type: number;
+  name: string;
+  coils: number;
   address: number;
 }
 
@@ -39,5 +46,6 @@ export interface SprinklerSettings {
   auth: string;
   triggers: Trigger[];
   switches: Switch[];
+  switchTypes: Switch[];
 }
 

@@ -33,16 +33,16 @@ class TriggerForm extends React.Component<TriggerFormProps> {
   //   sensEui: number;
   //   switchName: string;
   //   coil: number;
-  //   weekDays: number;
+  //   weekDays: boolean[];
+  //   hours: boolean[];
   //   onVal: number;
   //   offVal: number;
   //   onTimeHour: number;
   //   onTimeMinute: number;
-  //   onTimeWkDay: number;
   //   maxTimeSec: number;
   //   onTime: number;
   // }
-
+  
   render() {
     const { trigger, creating, handleValueChange, onDoneEditing, onCancelEditing } = this.props;
     return (
@@ -71,6 +71,62 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               value={trigger.coil}
               margin="normal"
             />
+            <span >
+                        <input
+                            id="mon"
+                            name="Mon"
+                            type="checkbox"
+                            checked={trigger.weekDays[0]}/>
+                        <label for="mon"></label>
+                        <input
+                            id="mon"
+                            name="Mon"
+                            type="checkbox"
+                            checked={trigger.weekDays[0]}/>
+                        <label for="mon"></label>
+                        <input
+                            id="mon"
+                            name="Mon"
+                            type="checkbox"
+                            checked={trigger.weekDays[0]}/>
+                        <label for="mon"></label>
+                        <input
+                            id="tue"
+                            name="Tue"
+                            type="checkbox"
+                            checked={trigger.weekDays[1]}/>
+                        <label for="tue"></label>
+                        <input
+                            id="wen"
+                            name="Wen"
+                            type="checkbox"
+                            checked={trigger.weekDays[2]}/>
+                        <label for="wen"></label>
+                        <input
+                            id="thu"
+                            name="Thu"
+                            type="checkbox"
+                            checked={trigger.weekDays[3]}/>
+                        <label for="thu"></label>
+                        <input
+                            id="fri"
+                            name="Fri"
+                            type="checkbox"
+                            checked={trigger.weekDays[4]}/>
+                        <label for="fri"></label>
+                        <input
+                            id="sat"
+                            name="Sat"
+                            type="checkbox"
+                            checked={trigger.weekDays[5]}/>
+                        <label for="sat"></label>
+                        <input
+                            id="sun"
+                            name="Sun"
+                            type="checkbox"
+                            checked={trigger.weekDays[6]}/>
+                        <label for="sun"></label>
+                    </span>
              <TextValidator
               name="tr_onVal"
               label="On val"

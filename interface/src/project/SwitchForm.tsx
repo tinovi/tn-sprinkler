@@ -30,6 +30,10 @@ class SwitchForm extends React.Component<SwitchFormProps> {
   submit = () => {
     this.formRef.current.submit();
   }
+
+  handleCheck = (event, index) =>  {
+    
+  };
   // export interface Switch {
   //   name: string;
   //   coils: number;
@@ -54,16 +58,12 @@ class SwitchForm extends React.Component<SwitchFormProps> {
               disabled={!creating}
               margin="normal"
             />
-             <TextValidator
-              validators={['required']}
-              errorMessages={['Coils is required']}
-              name="sw_coils"
-              label="Coil count"
-              fullWidth
-              variant="outlined"
-              value={switch_.coils}
-              margin="normal"
-            />
+              {switch_.coils.map((coilFlag, index) => (  
+                <label>
+                  <input type="checkbox" checked={switch_.coils[index]} onChange={(event) => this.handleCheck(event, index)} />
+                  {index}
+                </label>    
+              ))}  
             <TextValidator
               validators={['required']}
               errorMessages={['Address mask is required']}

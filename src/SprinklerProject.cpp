@@ -173,20 +173,20 @@ void SprinklerProject::send(const char * message){
     }
     for (Trigger_t _trigger : _settings.triggers) {
       /// check if running, an its time to switch off
-      if(_trigger.onTime && _trigger.maxTimeSec && (now - _trigger.onTime)>_trigger.maxTimeSec){
-        triggerOutput(&_trigger, 0);
-        continue;
-      }
-      //not triggered and time active
-      if (_trigger.onTime == 0 && CHECK_BIT(_trigger.weekDays, timeinfo.tm_wday) && CHECK_BIT(_trigger.hours, timeinfo.tm_hour)) 
-      {
+      // if(_trigger.onTime && _trigger.maxTimeSec && (now - _trigger.onTime)>_trigger.maxTimeSec){
+      //   triggerOutput(&_trigger, 0);
+      //   continue;
+      // }
+      // //not triggered and time active
+      // if (_trigger.onTime == 0 && CHECK_BIT(_trigger.weekDays, timeinfo.tm_wday) && CHECK_BIT(_trigger.hours, timeinfo.tm_hour)) 
+      // {
       
-        if (_trigger.minute && _trigger.minute == (timeinfo.tm_min + 1)) 
-        {
-          triggerOutput(&_trigger, 1);
-          continue;
-        }      
-      }      
+      //   if (_trigger.minute && _trigger.minute == (timeinfo.tm_min + 1)) 
+      //   {
+      //     triggerOutput(&_trigger, 1);
+      //     continue;
+      //   }      
+      // }      
     }
   }
 	
@@ -206,14 +206,23 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
   _settings.triggers.clear();
   if (root["triggers"].is<JsonArray>()) {
     for (JsonVariant trigger : root["triggers"].as<JsonArray>()) {
-     _settings.triggers.push_back(Trigger_t(trigger["name"], trigger["sensEui"], trigger["switchName"], trigger["coil"], trigger["weekDays"], trigger["hours"], trigger["minute"], trigger["onVal"], trigger["offVal"], trigger["maxTimeSec"], trigger["onTime"]));
+      Trigger_t trig(trigger["name"], trigger["devid"], trigger["sensor"], trigger["switchName"], trigger["coil"], trigger["onVal"], trigger["offVal"], trigger["onTimeMinute"], trigger["maxTimeSec"]);
+      int i = 0;
+      for (JsonVariant weekDay : root["weekDays"].as<JsonArray>()) {
+        trig.weekDays[i++] = weekDay;
+      }
+      i = 0;
+      for (JsonVariant hour : root["hours"].as<JsonArray>()) {
+        trig.hours[i++] = hour;
+      }
+      _settings.triggers.push_back(trig);
     }
   }
   if (root["switches"].is<JsonArray>()) {
     for (JsonVariant switcht : root["switches"].as<JsonArray>()) {
-     _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["coils"], switcht["name"]));
+     _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["name"]));
     }
-  }//type(type),address(address),coils(coils), name(name)
+  }
 }
 
 
@@ -224,24 +233,29 @@ void SprinklerProject::writeToJsonObject(JsonObject& root) {
   for (Trigger_t _trigger : _settings.triggers) {
     JsonObject trigger = triggers.createNestedObject();
     trigger["name"] = _trigger.name;
-    trigger["sensEui"] = _trigger.sensEui;
+    trigger["devid"] = _trigger.devid;
+    trigger["sensor"] = _trigger.sensor;
     trigger["switchName"] = _trigger.switchName;
     trigger["coil"] = _trigger.coil;
-    trigger["weekDays"] = _trigger.weekDays;
-    trigger["hours"] = _trigger.hours;
-    trigger["minute"] = _trigger.minute;
+    JsonArray weekDays = trigger.createNestedArray("weekDays");
+    for(bool day:_trigger.weekDays){
+      weekDays.add(day);
+    }
+    JsonArray hours = trigger.createNestedArray("hours");
+    for(bool hour:_trigger.hours){
+      hours.add(hour);
+    }
+    trigger["onTimeMinute"] = _trigger.onTimeMinute;
     trigger["onVal"] = _trigger.onVal;
     trigger["offVal"] = _trigger.offVal;
     trigger["maxTimeSec"] = _trigger.maxTimeSec;
-    trigger["onTime"] = _trigger.onTime;
   }
-   JsonArray switches = root.createNestedArray("triggers");
+   JsonArray switches = root.createNestedArray("switches");
   for (Switch_t _switch : _settings.switches) {
     JsonObject switcht = switches.createNestedObject();
     switcht["name"] = _switch.name;
     switcht["type"] = _switch.type;
     switcht["address"] = _switch.address;
-    switcht["coils"] = _switch.coils;
   }
 
 }
