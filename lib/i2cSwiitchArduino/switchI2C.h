@@ -1,5 +1,5 @@
 /*
- * vcs3i2c.h
+ * switchI2C.h
  *
  */
 
@@ -9,7 +9,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define  REG_READ    0x01
+#define  REG_READ_DATA    0x01
 
 #define  REG_RES     0x02
 
@@ -33,7 +33,7 @@ public:
   int setCoils(uint16_t coils);
   int newAddress(byte newAddr);
   int newReading();
-  void getData(vals_t readings);
+  void getData(byte *pointer);
 private:
   TwoWire *_wire;
   uint16_t addr;

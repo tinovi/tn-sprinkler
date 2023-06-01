@@ -1,7 +1,7 @@
 import React, { RefObject } from 'react';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 
-import { Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogActions, FormControlLabel, Checkbox } from '@material-ui/core';
 
 import { FormButton } from '../components';
 
@@ -28,21 +28,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
   submit = () => {
     this.formRef.current.submit();
   }
-  // export interface Trigger {
-  //   name: string;
-  //   sensEui: number;
-  //   switchName: string;
-  //   coil: number;
-  //   weekDays: boolean[];
-  //   hours: boolean[];
-  //   onVal: number;
-  //   offVal: number;
-  //   onTimeHour: number;
-  //   onTimeMinute: number;
-  //   maxTimeSec: number;
-  //   onTime: number;
-  // }
-  
+    
   render() {
     const { trigger, creating, handleValueChange, onDoneEditing, onCancelEditing } = this.props;
     return (
@@ -71,62 +57,55 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               value={trigger.coil}
               margin="normal"
             />
+             <div>
+         Week day : 
+              </div>
             <span >
-                        <input
-                            id="mon"
-                            name="Mon"
-                            type="checkbox"
-                            checked={trigger.weekDays[0]}/>
-                        <label for="mon"></label>
-                        <input
-                            id="mon"
-                            name="Mon"
-                            type="checkbox"
-                            checked={trigger.weekDays[0]}/>
-                        <label for="mon"></label>
-                        <input
-                            id="mon"
-                            name="Mon"
-                            type="checkbox"
-                            checked={trigger.weekDays[0]}/>
-                        <label for="mon"></label>
-                        <input
-                            id="tue"
-                            name="Tue"
-                            type="checkbox"
-                            checked={trigger.weekDays[1]}/>
-                        <label for="tue"></label>
-                        <input
-                            id="wen"
-                            name="Wen"
-                            type="checkbox"
-                            checked={trigger.weekDays[2]}/>
-                        <label for="wen"></label>
-                        <input
-                            id="thu"
-                            name="Thu"
-                            type="checkbox"
-                            checked={trigger.weekDays[3]}/>
-                        <label for="thu"></label>
-                        <input
-                            id="fri"
-                            name="Fri"
-                            type="checkbox"
-                            checked={trigger.weekDays[4]}/>
-                        <label for="fri"></label>
-                        <input
-                            id="sat"
-                            name="Sat"
-                            type="checkbox"
-                            checked={trigger.weekDays[5]}/>
-                        <label for="sat"></label>
-                        <input
-                            id="sun"
-                            name="Sun"
-                            type="checkbox"
-                            checked={trigger.weekDays[6]}/>
-                        <label for="sun"></label>
-                    </span>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[0]} />}   label="Mon"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[1]} />}   label="Tue"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[2]} />}   label="Wen"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[3]} />}   label="Thu"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[4]} />}   label="Fri"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[5]} />}   label="Sat"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[6]} />}   label="Sun"  labelPlacement="top"/>
+            </span>
+            <div>
+         Hour : 
+              </div>
+              <span >
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[0]} />}   label="0"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[1]} />}   label="1"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[2]} />}   label="2"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[3]} />}   label="3"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[4]} />}   label="4"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[5]} />}   label="5"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[6]} />}   label="6"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[7]} />}   label="7"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[8]} />}   label="8"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[9]} />}   label="9"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[10]} />}   label="10"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[11]} />}   label="11"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[12]} />}   label="12"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[13]} />}   label="13"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[14]} />}   label="14"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[15]} />}   label="15"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[16]} />}   label="16"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[17]} />}   label="17"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[18]} />}   label="18"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[19]} />}   label="19"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[20]} />}   label="20"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[21]} />}   label="21"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[22]} />}   label="22"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[23]} />}   label="23"  labelPlacement="top"/>
+              </span>
+              <TextValidator
+              name="tr_onMinute"
+              label="On minute"
+              fullWidth
+              variant="outlined"
+              value={trigger.onTimeMinute}
+              margin="normal"
+            />
              <TextValidator
               name="tr_onVal"
               label="On val"

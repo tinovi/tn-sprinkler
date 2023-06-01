@@ -4,6 +4,8 @@
 #include <AdminSettingsService.h>
 #include <ESP8266React.h>
 #include "decoder.h"
+#include "switchI2C.h"
+#include "time.h"
 
 #define BLINK_LED 2
 #define MAX_DELAY 1000
@@ -42,10 +44,12 @@ class Switch_t {
   uint8_t type;  // 1-i2c , 2 - rs
   int16_t address;   // i2c or rs addrress
   String name;
-
+  int16_t seconds;   // read interval seconds
+  time_t lastReadTime;  //last read time
+  vals_t readings;
  public:
-   Switch_t(uint8_t type, int16_t address, String name) 
-      : type(type),address(address), name(name) {
+   Switch_t(uint8_t type, int16_t address, int16_t seconds,  String name) 
+      : type(type),address(address),seconds(seconds), name(name) {
    }
 };
 

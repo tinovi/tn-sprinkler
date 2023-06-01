@@ -17,6 +17,7 @@ export interface RestControllerProps<D> extends WithSnackbarProps {
   loadData: () => void;
   connectSocket: (onSocketMsg: Function, onSocketOpen?: Function, onSocketClose?: Function) => void;
   socketEventMessage: (key:any, value:any) => void;
+  socketMessage: (key:any, value:any) => void;
 
   data?: D;
   loading: boolean;

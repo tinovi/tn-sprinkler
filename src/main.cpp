@@ -1,6 +1,7 @@
 #include <SprinklerProject.h>
 #include <ESP8266React.h>
 #include <FS.h>
+#include <Wire.h>
 #include "decoder.h"
 #define SERIAL_BAUD_RATE 9600
 
@@ -14,7 +15,7 @@ void setup() {
   // start serial and filesystem
   Serial.begin(SERIAL_BAUD_RATE);
   log_i("setup... \n");
-	
+	Wire.begin();
   // start the file system (must be done before starting the framework)
 #ifdef ESP32
   SPIFFS.begin(true);

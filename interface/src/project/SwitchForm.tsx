@@ -17,6 +17,7 @@ interface SwitchFormProps {
   handleCheckboxChange: (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
   onDoneEditing: () => void;
   onCancelEditing: () => void;
+  handleSwitchCheck: (index:number) => (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 class SwitchForm extends React.Component<SwitchFormProps> {
@@ -31,17 +32,17 @@ class SwitchForm extends React.Component<SwitchFormProps> {
     this.formRef.current.submit();
   }
 
-  handleCheck = (event, index) =>  {
-    
-  };
-  // export interface Switch {
+  // const menuItems = switchTypes.map(item => (
+  //   <MenuItem key={item.type} value={item.type}>{item.name}</MenuItem>
+  // ));
+    // export interface Switch {
   //   name: string;
   //   coils: number;
   //   type: number;
   //   address: number;
   // }
   render() {
-    const { switch_, creating, handleValueChange, onDoneEditing, onCancelEditing } = this.props;
+    const { switch_, creating, onDoneEditing, onCancelEditing, handleSwitchCheck } = this.props;
     return (
       <ValidatorForm onSubmit={onDoneEditing} ref={this.formRef}>
         <Dialog onClose={onCancelEditing} aria-labelledby="user-form-dialog-title" open={true}>
@@ -60,7 +61,7 @@ class SwitchForm extends React.Component<SwitchFormProps> {
             />
               {switch_.coils.map((coilFlag, index) => (  
                 <label>
-                  <input type="checkbox" checked={switch_.coils[index]} onChange={(event) => this.handleCheck(event, index)} />
+                  <input type="checkbox" id={switch_.name} checked={switch_.coils[index]} onChange={handleSwitchCheck(index)} />
                   {index}
                 </label>    
               ))}  

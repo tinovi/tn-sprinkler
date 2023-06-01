@@ -3,7 +3,6 @@
 #include <functional>
 #include "decoder.h"
 #include <lwip/apps/sntp.h>
-#include "time.h"
 
 SprinklerProject::SprinklerProject(AsyncWebServer* server, FS* fs, SecurityManager* securityManager) :
     AdminSettingsService(server, fs, securityManager, SPRINKLER_SETTINGS_PATH, SPRINKLER_SETTINGS_FILE),
@@ -34,6 +33,7 @@ void SprinklerProject::devicesList(AsyncWebServerRequest* request) {
       object["rssi"] = Sensors[i].rssi;
       object["bat"] = Sensors[i].bat;
       object["time"] = Sensors[i].time;
+      object["data"] = Sensors[i].data.as<JsonObject>();
 	}
   response->setLength();
   request->send(response);
@@ -63,16 +63,32 @@ void SprinklerProject::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient *
     wsClient = nullptr;
     log_i("Client disconnected \n");
   } else if(type == WS_EVT_DATA){
-
     data[len-1] = '\0';
     String dataIn((char*) data);
+  Serial.println(dataIn);
     int pipe = dataIn.indexOf('|');
     String key = dataIn.substring(0,pipe);
     String value = dataIn.substring(pipe + 1);
     log_i("Data received: %s   %s \n", key, value);
     if (key = "switch"){
-       
-       // ledcWrite(0, ivalue);
+      int cols = dataIn.indexOf(':');
+      String swName = value.substring(0,cols);
+      String vakc = value.substring(cols + 1);
+      int ekv = vakc.indexOf('=');
+      int swIdx = vakc.substring(0,ekv).toInt();
+      int swState = vakc.substring(ekv+1).toInt();
+      for (Switch_t _switch : _settings.switches) {
+        if(swName.equals(_switch.name) && _switch.type == 1){
+          SWI2C sw;
+          sw.init(_switch.address, &Wire);
+          if(swState){
+            bitSet(_switch.readings.coils, swIdx);
+          }else{
+            bitClear(_switch.readings.coils, swIdx);
+          }
+          sw.setCoils(_switch.readings.coils);
+        }
+      }
     }
   }
 }
@@ -99,7 +115,6 @@ void SprinklerProject::send(const char * message){
 		}
 		if(pp != std::string::npos){
 			if (rxd.find("AT+RCV=", 0) != std::string::npos){
-				//SerialBLE.print(rxd.c_str());
 				int ep = rxd.find('=');
 				std::string devid = rxd.substr(ep+1,8);
 				uint32_t eui;
@@ -119,10 +134,11 @@ void SprinklerProject::send(const char * message){
 					log_i("parsed :: %i,%i,%i devid=%s\n", Sensors[snum].up_cnt, Sensors[snum].rssi, Sensors[snum].snr, Sensors[snum].devid);
 					decodeUplink(snum);
 					if(WiFi.status() == WL_CONNECTED){
-						generateStr(snum);
-	          String output="";
-	          serializeJson(data, output);
-	          log_i("Sending %s\n",output.c_str());
+						String output="";
+	          Sensors[snum].data["rssi"] = Sensors[snum].rssi;
+            Sensors[snum].data["bat"] = Sensors[snum].bat;
+	          serializeJson(Sensors[snum].data, output);
+            log_i("Sending %s\n",output.c_str());
             send(output.c_str());
 						start_http_json(output, Sensors[snum].devid, _settings.url, _settings.auth);
 						Sensors[snum].hasData = false;
@@ -162,6 +178,8 @@ void SprinklerProject::send(const char * message){
   
   #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 	
+  
+
   void SprinklerProject::checkTrigger(){
     struct tm timeinfo;
     time_t now = time(nullptr);
@@ -170,6 +188,17 @@ void SprinklerProject::send(const char * message){
     if(!getLocalTime(&timeinfo)){
       log_i(“Failed to obtain time”);
       return;
+    }
+    for (Switch_t _switch : _settings.switches) {
+      if(_switch.seconds && (now - _switch.lastReadTime) > _switch.seconds && _switch.type ==1){
+        SWI2C sw;
+        sw.init(_switch.address, &Wire);
+	      sw.newReading(); // start sensor reading
+	      delay(100); //let sensor read data
+        sw.getData((byte *)&_switch.readings);
+        _switch.lastReadTime = now;
+
+      }
     }
     for (Trigger_t _trigger : _settings.triggers) {
       /// check if running, an its time to switch off
@@ -220,7 +249,7 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
   }
   if (root["switches"].is<JsonArray>()) {
     for (JsonVariant switcht : root["switches"].as<JsonArray>()) {
-     _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["name"]));
+     _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["seconds"], switcht["name"]));
     }
   }
 }
@@ -256,6 +285,7 @@ void SprinklerProject::writeToJsonObject(JsonObject& root) {
     switcht["name"] = _switch.name;
     switcht["type"] = _switch.type;
     switcht["address"] = _switch.address;
+    switcht["seconds"] = _switch.seconds;
   }
 
 }

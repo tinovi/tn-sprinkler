@@ -1,5 +1,5 @@
 /*
- * vcs3i2c.cpp
+ * switchI2C.cpp
  *
  */
 #include "switchI2C.h"
@@ -16,8 +16,6 @@ int SWI2C::init(int address, TwoWire *the_wire){
 }
 
 int SWI2C::init(int address){
-  _wire = &Wire;
-  _wire->begin();
   addr = address;
   return 0;
 }
@@ -99,20 +97,20 @@ int SWI2C::newAddress(byte newAddr){
 
 int SWI2C::newReading(){
   _wire->beginTransmission(addr); // transmit to device
-  _wire->write(REG_READ);              // sends one byte
+  _wire->write(REG_READ_DATA);              // sends one byte
   _wire->endTransmission();    // stop transmitting
   delay(300);
   return getState();
 }
 
-void SWI2C::getData(vals_t readings){
+//vals_t readings
+void SWI2C::getData(byte *pointer){
   _wire->beginTransmission(addr); // transmit to device
   _wire->write(REG_DATA);              // sends one byte
   _wire->endTransmission();    // stop transmitting
   _wire->requestFrom(addr, (uint8_t)14);
   if(i2cdelay(14)){
-   	byte *pointer = (byte *)&readings;
-	  for (int k = 0; k < 14; k++){
+    for (int k = 0; k < 14; k++){
 		  pointer[k] = (byte) _wire->read();
 	  }
   }

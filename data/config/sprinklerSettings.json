@@ -17,7 +17,8 @@
   "switches":[{
     "name": "i2cPLC1",
     "address": 85,
-    "type": 1
+    "type": 1,
+    "seconds": 30 
   }],
   "switchTypees":[{
     "name": "i2cPLC",

@@ -51,81 +51,6 @@ char *getMacAddress() {
 }
 
 
-StaticJsonDocument<1024> data;
-
-void generateStr(int cnum) {
-  data.clear();
-	data["id"] = mac;
-	data["devid"] = Sensors[cnum].devid;
-  data["set"] = Sensors[cnum].set;
-  data["set1"] = Sensors[cnum].set1;
-  data["bat"] =  Sensors[cnum].bat;
-	data["rssi"] = Sensors[cnum].rssi;
-	data["wrssi"] = WiFi.RSSI();
-  if(((Sensors[cnum].set >> BIT_SOIL1) & 1)==1){ //SOIL
-    data["e25"]=Sensors[cnum].e25;
-    data["ec"]=Sensors[cnum].ec;
-    data["temp"]=Sensors[cnum].temp;
-    data["vwc"] =Sensors[cnum].vwc;
-  }
-  if(((Sensors[cnum].set >> BIT_BME) & 1)==1){ //BME
-    data["airTemp"]=Sensors[cnum].airTemp;
-    data["airHum"]=Sensors[cnum].airHum;
-    if(Sensors[cnum].airPres!=65536){
-      data["airPres"] =Sensors[cnum].airPres;
-    }
-  }
-  if(((Sensors[cnum].set >> BIT_OPT) & 1)==1){ //OPT
-    data["lux"]=Sensors[cnum].lux;
-  }
-  if(((Sensors[cnum].set >> BIT_PULSE) & 1)==1){ //PULSE
-    data["pulse"]=Sensors[cnum].pulse;
-  }
-  if(((Sensors[cnum].set >> BIT_SOIL2) & 1)==1){ //SOIL
-    data["e25_1"] = Sensors[cnum].e25_1;
-    data["ec_1"] = Sensors[cnum].ec_1;
-    data["temp_1"] = Sensors[cnum].temp_1;
-    data["vwc_1"] =Sensors[cnum].vwc_1;
-  }
-  if(((Sensors[cnum].set >> BIT_PRES) & 1)==1){ //PRESSURE
-    data["press"] = Sensors[cnum].press;
-  }
-  if(((Sensors[cnum].set1 >> BIT1_LEAF) & 1)==1){ //LEAF
-    data["leafHum"]= Sensors[cnum].leafHum;
-    data["leafTemp"]=Sensors[cnum].leafTemp;
-  }
-  if(((Sensors[cnum].set1 >> BIT1_ADC) & 1)==1){ //ADC
-    data["adc"]=Sensors[cnum].adc;
-  }
-  if(((Sensors[cnum].set1 >> BIT1_WIND) & 1)==1){ //WIND
-    data["windDir"] = Sensors[cnum].windDir;
-    data["windSpeed"]=Sensors[cnum].windSpeed;
-  }
-  if(((Sensors[cnum].set1 >> BIT1_SCALE) & 1)==1){ //SCALE
-    data["scale"]=Sensors[cnum].scale;
-  }
-  if(((Sensors[cnum].set1 >> BIT1_SOIL_MULTI) & 1)==1){ //BIT1_SOIL_MULTI
-    //for(uint8_t c=0;c < 6;c++){
-        data["m_dp_1"] = Sensors[cnum].m_dp[0];
-        data["m_vwc_1"] = Sensors[cnum].m_vwc[0];
-        data["m_dp_2"] = Sensors[cnum].m_dp[1];
-        data["m_vwc_2"] = Sensors[cnum].m_vwc[1];
-        data["m_dp_3"] = Sensors[cnum].m_dp[2];
-        data["m_vwc_3"] = Sensors[cnum].m_vwc[2];
-        data["m_dp_4"] = Sensors[cnum].m_dp[3];
-        data["m_vwc_4"] = Sensors[cnum].m_vwc[3];
-        data["m_dp_5"] = Sensors[cnum].m_dp[4];
-        data["m_vwc_5"] = Sensors[cnum].m_vwc[4];
-        data["m_dp_6"] = Sensors[cnum].m_dp[5];
-        data["m_vwc_6"] = Sensors[cnum].m_vwc[5];
-      //}
-    //  for(uint8_t i = 0;i < 3;i++){
-        data["m_temp_1"] = Sensors[cnum].m_temp[0];
-        data["m_temp_2"] = Sensors[cnum].m_temp[1];
-        data["m_temp_3"] = Sensors[cnum].m_temp[2];
-     // }
-  }
-}
 
 //[135831][I][http.cpp:24] start_http_json(): Sending {"id":"WIFI6055F9C73E74","devid":"051c3296","set":0,"bat":254,"rssi":-7,"wrssi":-62,"m_dp_":2.648454098e-43,"m_vwc_":-0.052999999,"_dp_":2.802596929e-43,"_vwc_":-0.052999999,"dp_":6.67018069e-43,"vwc_":-0.052999999,"p_":7.707141554e-43,"wc_":-0.052999999,"_":-0.052999999,"c_":-0.052999999,"":4.344025239e-44,"m_temp_":4.091791516e-43,"_temp_":8.26766094e-44,"temp_":3.124895575e-43}
 
@@ -176,68 +101,68 @@ void decodeUplink(int cnum) {
 	Sensors[cnum].len = hexCharacterStringToBytes(bytes, Sensors[cnum].dataStr);
 	log_i("len=%i\n", Sensors[cnum].len);
   int pos = 1;
-	data.clear();
+  Sensors[cnum].data.clear();
 	Sensors[cnum].set = bytes[0];
-	Sensors[cnum].bat = bytes[pos++];
+  Sensors[cnum].bat = bytes[pos++]; 
 	if(((bytes[0] >> BIT_SOIL1) & 1)==1){ //SOIL
-    Sensors[cnum].e25 = bytesToSigned(bytes, pos, 100.0);
+    Sensors[cnum].data["e25"] = bytesToSigned(bytes, pos, 100.0);
     pos = pos+2;
-    Sensors[cnum].ec = bytesToSigned(bytes,pos,10.0);
+    Sensors[cnum].data["ec"] = bytesToSigned(bytes,pos,10.0);
     pos = pos+2;
-    Sensors[cnum].temp = bytesToSigned(bytes,pos,100.0);
+    Sensors[cnum].data["temp"] = bytesToSigned(bytes,pos,100.0);
     pos = pos+2;
-    Sensors[cnum].vwc = bytesToSigned(bytes,pos,1.0);
+    Sensors[cnum].data["vwc"] = bytesToSigned(bytes,pos,1.0);
     pos = pos+2;
   }
   if(((bytes[0] >> BIT_BME) & 1)==1){ //BME
-    Sensors[cnum].airTemp = bytesToSigned(bytes,pos,100.0);
+    Sensors[cnum].data["airTemp"] = bytesToSigned(bytes,pos,100.0);
     pos = pos+2;
-    Sensors[cnum].airHum = bytesToSigned(bytes,pos,100.0);
+    Sensors[cnum].data["airHum"] = bytesToSigned(bytes,pos,100.0);
     pos = pos+2;
-    Sensors[cnum].airPres = bytesToSigned(bytes,pos,1.0)+50000;
+    Sensors[cnum].data["airPres"] = bytesToSigned(bytes,pos,1.0)+50000;
     pos = pos+2;
   }
   if(((bytes[0] >> BIT_OPT) & 1)==1){ //OPT
-    Sensors[cnum].lux = bytesToInt32(bytes,pos)/10;
+    Sensors[cnum].data["lux"] = bytesToInt32(bytes,pos)/10;
     pos = pos+4;
   }
   if(((bytes[0] >> BIT_PULSE) & 1)==1){ //PULSE
-    Sensors[cnum].pulse=bytesToInt32(bytes,pos);
+    Sensors[cnum].data["pulse"]=bytesToInt32(bytes,pos);
     pos = pos+4;
   }
   if(((bytes[0] >> BIT_SOIL2) & 1)==1){ //SOIL
-    Sensors[cnum].e25_1 = bytesToSigned(bytes,pos,100.0);
+    Sensors[cnum].data["e25_1"] = bytesToSigned(bytes,pos,100.0);
     pos = pos+2;
-    Sensors[cnum].ec_1 = bytesToSigned(bytes,pos,10.0);
+    Sensors[cnum].data["ec_1"] = bytesToSigned(bytes,pos,10.0);
     pos = pos+2;
-    Sensors[cnum].temp_1 = bytesToSigned(bytes,pos,100.0);
+    Sensors[cnum].data["temp_1"] = bytesToSigned(bytes,pos,100.0);
     pos = pos+2;
-    Sensors[cnum].vwc_1 = bytesToSigned(bytes,pos,1.0);
+    Sensors[cnum].data["vwc_1"] = bytesToSigned(bytes,pos,1.0);
     pos = pos+2;
   }
   if(((bytes[0] >> BIT_PRES) & 1)==1){ //PRESSURE
-    Sensors[cnum].press = bytesToSigned(bytes,pos,100.0);
+    Sensors[cnum].data["press"] = bytesToSigned(bytes,pos,100.0);
     pos = pos+2;
   }
   if(Sensors[cnum].len >(pos+1)){
 	  Sensors[cnum].set1 =  bytes[pos++];
     if(((Sensors[cnum].set1 >> BIT1_LEAF) & 1)==1){ //LEAF
-      Sensors[cnum].leafHum = bytesToSigned(bytes,pos,100.0);
+      Sensors[cnum].data["leafHum"] = bytesToSigned(bytes,pos,100.0);
       pos = pos+2;
-      Sensors[cnum].leafTemp = bytesToSigned(bytes,pos,100.0);
+      Sensors[cnum].data["leafTemp"] = bytesToSigned(bytes,pos,100.0);
       pos = pos+2;
     }
     if(((Sensors[cnum].set1 >> BIT1_ADC) & 1)==1){ //ADC
-      Sensors[cnum].adc = bytesToFloat32(bytes,pos);
+      Sensors[cnum].data["adc"] = bytesToFloat32(bytes,pos);
       pos = pos+4;
     }
     if(((Sensors[cnum].set1 >> BIT1_WIND) & 1)==1){ //WIND
-      Sensors[cnum].windDir = bytes[pos++];
-      Sensors[cnum].windSpeed = bytesToFloat32(bytes,pos);
+      Sensors[cnum].data["windDir"] = bytes[pos++];
+      Sensors[cnum].data["windSpeed"] = bytesToFloat32(bytes,pos);
       pos = pos+4;
     }
     if(((Sensors[cnum].set1 >> BIT1_SCALE) & 1)==1){ //SCALE
-      Sensors[cnum].scale = bytesToInt32(bytes,pos)/10;
+      Sensors[cnum].data["scale"] = bytesToInt32(bytes,pos)/10;
       pos = pos+4;
     }
     if(((Sensors[cnum].set1 >> BIT1_SOIL_MULTI) & 1)==1){ //BIT1_SOIL_MULTI
@@ -251,6 +176,22 @@ void decodeUplink(int cnum) {
         Sensors[cnum].m_temp[i] = bytesToSigned(bytes,pos,100.0);
         pos = pos+2;
       }
+      Sensors[cnum].data["m_dp_1"] = Sensors[cnum].m_dp[0];
+      Sensors[cnum].data["m_vwc_1"] = Sensors[cnum].m_vwc[0];
+      Sensors[cnum].data["m_dp_2"] = Sensors[cnum].m_dp[1];
+      Sensors[cnum].data["m_vwc_2"] = Sensors[cnum].m_vwc[1];
+      Sensors[cnum].data["m_dp_3"] = Sensors[cnum].m_dp[2];
+      Sensors[cnum].data["m_vwc_3"] = Sensors[cnum].m_vwc[2];
+      Sensors[cnum].data["m_dp_4"] = Sensors[cnum].m_dp[3];
+      Sensors[cnum].data["m_vwc_4"] = Sensors[cnum].m_vwc[3];
+      Sensors[cnum].data["m_dp_5"] = Sensors[cnum].m_dp[4];
+      Sensors[cnum].data["m_vwc_5"] = Sensors[cnum].m_vwc[4];
+      Sensors[cnum].data["m_dp_6"] = Sensors[cnum].m_dp[5];
+      Sensors[cnum].data["m_vwc_6"] = Sensors[cnum].m_vwc[5];
+      Sensors[cnum].data["m_temp_1"] = Sensors[cnum].m_temp[0];
+      Sensors[cnum].data["m_temp_2"] = Sensors[cnum].m_temp[1];
+      Sensors[cnum].data["m_temp_3"] = Sensors[cnum].m_temp[2];
+
     }
   }
 }

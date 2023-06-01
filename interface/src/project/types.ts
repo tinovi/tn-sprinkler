@@ -4,10 +4,10 @@ export interface DerviceInfoList {
 }
 
 export interface DerviceInfo {
+  devid: string;
   rssi: number;
   bat: number;
   time: number;
-  devid: string;
   data: object;
 }
 
@@ -32,6 +32,8 @@ export interface Switch {
   coils: boolean[];
   type: number;
   address: number;
+  seconds: number;
+  lastReadTime: number;
 }
 
 export interface SwitchType {

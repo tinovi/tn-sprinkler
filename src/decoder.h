@@ -42,30 +42,10 @@ typedef struct {
 
     uint8_t set;
     uint8_t set1;
-   	double e25;
-	double ec;
-	double temp;
-	double vwc;
-   	double e25_1;
-	double ec_1;
-	double temp_1;
-	double vwc_1;
-	double airTemp;
-	double airHum;
-	double airPres;
-	int32_t lux;
-	int32_t pulse;
-	double leafHum;
-	double leafTemp;
-	double press;
-	double adc;
-	uint8_t windDir;
-	int32_t windSpeed;
-	double scale;
 	double m_dp[6];
 	double m_vwc[6];
 	double m_temp[3];
-
+	StaticJsonDocument<1024> data;
 } DataMag;
 
 
@@ -74,7 +54,6 @@ typedef struct {
 extern DataMag Sensors[DEMO_SLOT_NUMBER];
 extern String mac;
 int FindEui(uint32_t Eui);
-extern StaticJsonDocument<1024> data;
 extern int SlotCounter;   
 uint8_t hexCharacterStringToBytes(uint8_t *byteArray, const char *hexString);
 void decodeUplink(int cnum);

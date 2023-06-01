@@ -29,21 +29,7 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
   state: ManageUsersFormState = {
     creating: false
   };
-  // export interface Trigger {
-  //   name: string;
-  //   devid: string;
-  //   sensor: string;
-  //   switchName: string;
-  //   coil: number;
-  //   weekDays: boolean[];
-  //   hours: boolean[];
-  //   onVal: number;
-  //   offVal: number;
-  //   onTimeHour: number;
-  //   onTimeMinute: number;
-  //   maxTimeSec: number;
-  //   onTime: number;
-  // }
+  
   createTrigger = () => {
     this.setState({
       creating: true,
@@ -57,10 +43,9 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
         hours:  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
         onVal: 0,
         offVal: 0,
-        onTimeHour: 0,
         onTimeMinute: 0,
         maxTimeSec: 0,
-        onTime: 0
+        lastOnTime: 0
       }
     });
   };
@@ -130,8 +115,8 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
                 <TableCell>Name</TableCell>
                 <TableCell align="center">Name</TableCell>
                 <TableCell align="center">Switch</TableCell>
-                <TableCell align="center">Sensor EUI</TableCell>
-                <TableCell align="center">OnTime</TableCell>
+                <TableCell align="center">Device.Sensor</TableCell>
+                <TableCell align="center">OnTimeMinute</TableCell>
                 <TableCell align="center">Conditions</TableCell>
                 <TableCell />
               </TableRow>
@@ -149,12 +134,12 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
                   </TableCell>
                   <TableCell align="center">
                     {
-                     trigger.sensEui
+                     trigger.devid +'.'+ trigger.sensor
                     }
                   </TableCell>
                   <TableCell align="center">
                     {
-                     trigger.onTime > 0 ? new Date(trigger.onTime * 1000).toISOString() : '' 
+                     trigger.onTimeMinute > 0 ? new Date(trigger.onTimeMinute * 1000).toISOString() : '' 
                     }
                   </TableCell>
                   <TableCell align="center">
@@ -173,7 +158,7 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
                 <TableCell colSpan={2} />
                 <TableCell align="center">
                   <Button startIcon={<PersonAddIcon />} variant="contained" color="secondary" onClick={this.createTrigger}>
-                    Add User
+                    Add Trigger
                   </Button>
                 </TableCell>
               </TableRow>

@@ -35,9 +35,11 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
       creating: true,
       switch_: {
         name: "I2Cdefault",
-        coils: 6,
+        coils: [false,false,false,false,false,false],
         type: 1,
-        address: 85
+        seconds: 30,
+        address: 85,
+        lastReadTime: 0
       }
     });
   };
@@ -92,6 +94,11 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
   onSubmit = () => {
     this.props.saveData();
     // this.props.authenticatedContext.refresh();
+  }
+
+  
+  handleSwitchCheck =  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) =>{
+    this.props.socketMessage('switch', event.target.id +':'+ new String(index) +'='+(event.target.checked? '1':'0'));
   }
 
   render() {
@@ -174,6 +181,7 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
             handleValueChange={this.handleUserValueChange}
             handleCheckboxChange={this.handleUserCheckboxChange}
             uniqueName={this.uniqueName}
+            handleSwitchCheck={this.handleSwitchCheck}
           />
         }
       </Fragment>
