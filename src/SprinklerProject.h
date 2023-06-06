@@ -89,6 +89,7 @@ class SprinklerProject : public AdminSettingsService<SprinklerSettings> {
   void readData();
   void checkTrigger();
   void triggerOutput(Trigger_t *_trigger, uint8_t status);
+  void readSwitches();
  protected:
   void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
   void readFromJsonObject(JsonObject& root);

@@ -153,32 +153,18 @@ void SprinklerProject::send(const char * message){
   }
 
 
-//   class Trigger_t {
-//  public:
-//   uint32_t sensEui;  // sensor EUI
-//   uint8_t switchName;  // switch name
-//   uint8_t coil;  // coil number
-//   uint8_t weekDays;  // bit week days operational
-//   uint32_t hours;  //bit hours of day operational
-//   uint8_t minute; /**Trigger on time*/
-//   int16_t onVal;   /**Sensor VWC value to switch On*/
-//   int16_t offVal;   /**Sensor VWC value to switch off*/
-//   uint16_t maxTimeSec; /**Max time active seconds*/
-//   uint32_t onTime;  //last switched on
-//   String name;
+// #define ADCS 0
+// #define TEMPS 2
+// #define PULS 4
 
-//  public:
-//    Trigger_t(String name, uint32_t sensEui) : name(name), sensEui(sensEui) {
-//    }
-// };
 
-  void SprinklerProject::triggerOutput(Trigger_t *_trigger, uint8_t status){
+ void SprinklerProject::triggerOutput(Trigger_t *_trigger, uint8_t status){
 
   }
-  
+ 
+
   #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
-	
-  
+ 
 
   void SprinklerProject::checkTrigger(){
     struct tm timeinfo;
@@ -189,15 +175,31 @@ void SprinklerProject::send(const char * message){
       log_i(“Failed to obtain time”);
       return;
     }
+    SWI2C sw;
     for (Switch_t _switch : _settings.switches) {
       if(_switch.seconds && (now - _switch.lastReadTime) > _switch.seconds && _switch.type ==1){
-        SWI2C sw;
         sw.init(_switch.address, &Wire);
 	      sw.newReading(); // start sensor reading
 	      delay(100); //let sensor read data
         sw.getData((byte *)&_switch.readings);
         _switch.lastReadTime = now;
-
+        int snum = FindEui(_switch.address);
+        Sensors[snum].time = now;
+        std::string devid = "SW_"+_switch.address;
+        devid.copy(Sensors[snum].devid,devid.length());
+        Sensors[snum].data.clear();
+        if(_switch.readings.holdingRegs[0]!=0){
+          Sensors[snum].data["adc1"] =  _switch.readings.holdingRegs[0] / 100.0;
+        }
+        if(_switch.readings.holdingRegs[1]!=0){
+          Sensors[snum].data["adc2"] =  _switch.readings.holdingRegs[1] / 100.0;
+        }
+        if(_switch.readings.holdingRegs[2]!=0){
+          Sensors[snum].data["temp1"] =  _switch.readings.holdingRegs[2] / 100.0;
+        }
+        if(_switch.readings.holdingRegs[3]!=0){
+          Sensors[snum].data["temp2"] =  _switch.readings.holdingRegs[3] / 100.0;
+        }
       }
     }
     for (Trigger_t _trigger : _settings.triggers) {
@@ -223,8 +225,7 @@ void SprinklerProject::send(const char * message){
     delay(100);
     readData();
     checkTrigger();
-
-	}
+  }
 
 
 
