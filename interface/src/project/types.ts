@@ -30,6 +30,7 @@ export interface Trigger {
 export interface Switch {
   name: string;
   coils: boolean[];
+  coilsCount: number;
   type: number;
   address: number;
   seconds: number;

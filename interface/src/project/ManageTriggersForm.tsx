@@ -50,7 +50,7 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
     });
   };
 
-  uniqueName = (name: string) => {
+  uniqueTriggerName = (name: string) => {
     return !this.props.data.triggers.find(u => u.name === name);
   }
 
@@ -89,13 +89,29 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
     }
   };
 
-  handleUserValueChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  handleTriggerValueChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({creating: false, trigger: { ...this.state.trigger!, [name]: event.target.value } });
   };
 
-  handleUserCheckboxChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  handleTriggerCheckboxChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({creating: false, trigger: { ...this.state.trigger!, [name]: event.target.checked } });
   }
+
+  
+  handleWeekCheckboxChange  =  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) =>{
+    if(this.state.trigger){
+      this.state.trigger.weekDays[index] = event.target.checked;
+      this.setState({creating: false, trigger: this.state.trigger });
+    }
+  }
+
+  handleHourCheckboxChange  =  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) =>{
+    if(this.state.trigger){
+      this.state.trigger.hours[index] = event.target.checked;
+      this.setState({creating: false, trigger: this.state.trigger });
+    }
+  }
+
 
   onSubmit = () => {
     this.props.saveData();
@@ -113,11 +129,9 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell align="center">Name</TableCell>
                 <TableCell align="center">Switch</TableCell>
                 <TableCell align="center">Device.Sensor</TableCell>
                 <TableCell align="center">OnTimeMinute</TableCell>
-                <TableCell align="center">Conditions</TableCell>
                 <TableCell />
               </TableRow>
             </TableHead>
@@ -180,9 +194,10 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
             creating={creating}
             onDoneEditing={this.doneEditingTrigger}
             onCancelEditing={this.cancelEditingTrigger}
-            handleValueChange={this.handleUserValueChange}
-            handleCheckboxChange={this.handleUserCheckboxChange}
-            uniqueName={this.uniqueName}
+            handleValueChange={this.handleTriggerValueChange}
+            handleWeekCheckboxChange={this.handleWeekCheckboxChange}
+            handleHourCheckboxChange={this.handleHourCheckboxChange}
+            uniqueTriggerName={this.uniqueTriggerName}
           />
         }
       </Fragment>

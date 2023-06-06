@@ -47,9 +47,10 @@ class Switch_t {
   int16_t seconds;   // read interval seconds
   time_t lastReadTime;  //last read time
   vals_t readings;
+  uint8_t coilsCount;  // coils count
  public:
-   Switch_t(uint8_t type, int16_t address, int16_t seconds,  String name) 
-      : type(type),address(address),seconds(seconds), name(name) {
+   Switch_t(uint8_t type, int16_t address, int16_t seconds,  String name, uint8_t coilsCount) 
+      : type(type),address(address),seconds(seconds), name(name), coilsCount(coilsCount){
    }
 };
 
@@ -89,7 +90,6 @@ class SprinklerProject : public AdminSettingsService<SprinklerSettings> {
   void readData();
   void checkTrigger();
   void triggerOutput(Trigger_t *_trigger, uint8_t status);
-  void readSwitches();
  protected:
   void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
   void readFromJsonObject(JsonObject& root);

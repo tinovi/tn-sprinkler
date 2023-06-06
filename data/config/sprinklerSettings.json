@@ -18,6 +18,7 @@
     "name": "i2cPLC1",
     "address": 85,
     "type": 1,
+    "coilsCount": 6,
     "seconds": 30 
   }],
   "switchTypees":[{

@@ -250,7 +250,7 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
   }
   if (root["switches"].is<JsonArray>()) {
     for (JsonVariant switcht : root["switches"].as<JsonArray>()) {
-     _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["seconds"], switcht["name"]));
+     _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["seconds"], switcht["name"], switcht["coilsCount"]));
     }
   }
 }
@@ -287,6 +287,12 @@ void SprinklerProject::writeToJsonObject(JsonObject& root) {
     switcht["type"] = _switch.type;
     switcht["address"] = _switch.address;
     switcht["seconds"] = _switch.seconds;
+    switcht["coilsCount"] = _switch.coilsCount;
+    
+    JsonArray coils = switcht.createNestedArray("coils");
+    for(int i=0; i<_switch.coilsCount;i++){
+      coils.add((bool)(CHECK_BIT(_switch.readings.coils, i)?true:false));
+    }
   }
 
 }

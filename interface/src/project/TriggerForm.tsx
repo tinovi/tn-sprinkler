@@ -10,9 +10,10 @@ import { Trigger } from './types';
 interface TriggerFormProps {
   creating: boolean;
   trigger: Trigger;
-  uniqueName: (value: any) => boolean;
+  uniqueTriggerName: (value: any) => boolean;
   handleValueChange: (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCheckboxChange: (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
+  handleWeekCheckboxChange:  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) => void;
+  handleHourCheckboxChange:  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) => void;
   onDoneEditing: () => void;
   onCancelEditing: () => void;
 }
@@ -22,7 +23,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
   formRef: RefObject<any> = React.createRef();
 
   componentDidMount() {
-    ValidatorForm.addValidationRule('uniqueTriggername', this.props.uniqueName);
+    ValidatorForm.addValidationRule('uniqueTriggerName', this.props.uniqueTriggerName);
   }
 
   submit = () => {
@@ -30,21 +31,22 @@ class TriggerForm extends React.Component<TriggerFormProps> {
   }
     
   render() {
-    const { trigger, creating, handleValueChange, onDoneEditing, onCancelEditing } = this.props;
+    const { trigger, creating, handleValueChange, onDoneEditing, onCancelEditing, handleWeekCheckboxChange, handleHourCheckboxChange } = this.props;
     return (
       <ValidatorForm onSubmit={onDoneEditing} ref={this.formRef}>
         <Dialog onClose={onCancelEditing} aria-labelledby="user-form-dialog-title" open={true}>
           <DialogTitle id="user-form-dialog-title">{creating ? 'Add' : 'Modify'} Trigger</DialogTitle>
           <DialogContent dividers={true}>
             <TextValidator
-              validators={creating ? ['required', 'uniqueTriggername', 'matchRegexp:^[a-zA-Z0-9_\\.]{1,24}$'] : []}
+              validators={creating ? ['required', 'uniqueTriggerName', 'matchRegexp:^[a-zA-Z0-9_\\.]{1,24}$'] : []}
               errorMessages={creating ? ['Triggername is required', "Triggername already exists", "Must be 1-24 characters: alpha numeric, '_' or '.'"] : []}
-              name="  "
+              name="name"
               label="Triggername"
               fullWidth
               variant="outlined"
               value={trigger.name}
               disabled={!creating}
+              onChange={handleValueChange('name')}
               margin="normal"
             />
              <TextValidator
@@ -55,48 +57,49 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               fullWidth
               variant="outlined"
               value={trigger.coil}
+              onChange={handleValueChange('coil')}
               margin="normal"
             />
              <div>
          Week day : 
               </div>
             <span >
-              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[0]} />}   label="Mon"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[1]} />}   label="Tue"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[2]} />}   label="Wen"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[3]} />}   label="Thu"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[4]} />}   label="Fri"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[5]} />}   label="Sat"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[6]} />}   label="Sun"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[0]} onChange={handleWeekCheckboxChange(0)}/>}   label="Mon"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[1]} onChange={handleWeekCheckboxChange(1)}/>}   label="Tue"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[2]} onChange={handleWeekCheckboxChange(2)}/>}   label="Wen"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[3]} onChange={handleWeekCheckboxChange(3)}/>}   label="Thu"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[4]} onChange={handleWeekCheckboxChange(4)}/>}   label="Fri"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[5]} onChange={handleWeekCheckboxChange(5)}/>}   label="Sat"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.weekDays[6]} onChange={handleWeekCheckboxChange(6)}/>}   label="Sun"  labelPlacement="top"/>
             </span>
             <div>
          Hour : 
               </div>
               <span >
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[0]} />}   label="0"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[1]} />}   label="1"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[2]} />}   label="2"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[3]} />}   label="3"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[4]} />}   label="4"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[5]} />}   label="5"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[6]} />}   label="6"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[7]} />}   label="7"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[8]} />}   label="8"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[9]} />}   label="9"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[10]} />}   label="10"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[11]} />}   label="11"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[12]} />}   label="12"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[13]} />}   label="13"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[14]} />}   label="14"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[15]} />}   label="15"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[16]} />}   label="16"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[17]} />}   label="17"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[18]} />}   label="18"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[19]} />}   label="19"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[20]} />}   label="20"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[21]} />}   label="21"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[22]} />}   label="22"  labelPlacement="top"/>
-              <FormControlLabel  control={<Checkbox checked={trigger.hours[23]} />}   label="23"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[0]} onChange={handleHourCheckboxChange(0)}/>}   label="0"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[1]} onChange={handleHourCheckboxChange(1)}/>}   label="1"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[2]} onChange={handleHourCheckboxChange(2)}/>}   label="2"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[3]} onChange={handleHourCheckboxChange(3)}/>}   label="3"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[4]} onChange={handleHourCheckboxChange(4)}/>}   label="4"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[5]} onChange={handleHourCheckboxChange(5)}/>}   label="5"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[6]} onChange={handleHourCheckboxChange(6)}/>}   label="6"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[7]} onChange={handleHourCheckboxChange(7)}/>}   label="7"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[8]} onChange={handleHourCheckboxChange(8)}/>}   label="8"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[9]} onChange={handleHourCheckboxChange(9)}/>}   label="9"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[10]} onChange={handleHourCheckboxChange(10)}/>}   label="10"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[11]} onChange={handleHourCheckboxChange(11)}/>}   label="11"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[12]} onChange={handleHourCheckboxChange(12)}/>}   label="12"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[13]} onChange={handleHourCheckboxChange(13)}/>}   label="13"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[14]} onChange={handleHourCheckboxChange(14)}/>}   label="14"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[15]} onChange={handleHourCheckboxChange(15)}/>}   label="15"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[16]} onChange={handleHourCheckboxChange(16)}/>}   label="16"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[17]} onChange={handleHourCheckboxChange(17)}/>}   label="17"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[18]} onChange={handleHourCheckboxChange(18)}/>}   label="18"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[19]} onChange={handleHourCheckboxChange(19)}/>}   label="19"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[20]} onChange={handleHourCheckboxChange(20)}/>}   label="20"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[21]} onChange={handleHourCheckboxChange(21)}/>}   label="21"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[22]} onChange={handleHourCheckboxChange(22)}/>}   label="22"  labelPlacement="top"/>
+              <FormControlLabel  control={<Checkbox checked={trigger.hours[23]} onChange={handleHourCheckboxChange(23)}/>}   label="23"  labelPlacement="top"/>
               </span>
               <TextValidator
               name="tr_onMinute"
@@ -104,6 +107,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               fullWidth
               variant="outlined"
               value={trigger.onTimeMinute}
+              onChange={handleValueChange('onTimeMinute')}
               margin="normal"
             />
              <TextValidator
@@ -112,6 +116,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               fullWidth
               variant="outlined"
               value={trigger.onVal}
+              onChange={handleValueChange('onVal')}
               margin="normal"
             />
              <TextValidator
@@ -120,6 +125,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               fullWidth
               variant="outlined"
               value={trigger.offVal}
+              onChange={handleValueChange('offVal')}
               margin="normal"
             />
              <TextValidator
@@ -128,6 +134,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               fullWidth
               variant="outlined"
               value={trigger.maxTimeSec}
+              onChange={handleValueChange('maxTimeSec')}
               margin="normal"
             />
           </DialogContent>

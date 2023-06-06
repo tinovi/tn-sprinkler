@@ -12,9 +12,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 interface SwitchFormProps {
   creating: boolean;
   switch_: Switch;
-  uniqueName: (value: any) => boolean;
+  uniqueSwitchName: (value: any) => boolean;
   handleValueChange: (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCheckboxChange: (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
   onDoneEditing: () => void;
   onCancelEditing: () => void;
   handleSwitchCheck: (index:number) => (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -25,24 +24,15 @@ class SwitchForm extends React.Component<SwitchFormProps> {
   formRef: RefObject<any> = React.createRef();
 
   componentDidMount() {
-    ValidatorForm.addValidationRule('uniqueSwitchName', this.props.uniqueName);
+    ValidatorForm.addValidationRule('uniqueSwitchName', this.props.uniqueSwitchName);
   }
 
   submit = () => {
     this.formRef.current.submit();
   }
 
-  // const menuItems = switchTypes.map(item => (
-  //   <MenuItem key={item.type} value={item.type}>{item.name}</MenuItem>
-  // ));
-    // export interface Switch {
-  //   name: string;
-  //   coils: number;
-  //   type: number;
-  //   address: number;
-  // }
   render() {
-    const { switch_, creating, onDoneEditing, onCancelEditing, handleSwitchCheck } = this.props;
+    const { switch_, creating, onDoneEditing, onCancelEditing, handleSwitchCheck, handleValueChange } = this.props;
     return (
       <ValidatorForm onSubmit={onDoneEditing} ref={this.formRef}>
         <Dialog onClose={onCancelEditing} aria-labelledby="user-form-dialog-title" open={true}>
@@ -51,12 +41,24 @@ class SwitchForm extends React.Component<SwitchFormProps> {
             <TextValidator
               validators={creating ? ['required', 'uniqueSwitchName', 'matchRegexp:^[a-zA-Z0-9_\\.]{1,24}$'] : []}
               errorMessages={creating ? ['Name is required', "Name already exists", "Must be 1-24 characters: alpha numeric, '_' or '.'"] : []}
-              name="sw_name"
+              name="name"
               label="Name"
               fullWidth
               variant="outlined"
               value={switch_.name}
               disabled={!creating}
+              onChange={handleValueChange('name')}
+              margin="normal"
+            />
+            <TextValidator
+              validators={['required']}
+              errorMessages={['Coils count is required']}
+              name="tr_coil"
+              label="Coils count"
+              fullWidth
+              variant="outlined"
+              value={switch_.coilsCount}
+              onChange={handleValueChange('coilsCount')}
               margin="normal"
             />
               {switch_.coils.map((coilFlag, index) => (  
@@ -73,6 +75,7 @@ class SwitchForm extends React.Component<SwitchFormProps> {
               fullWidth
               variant="outlined"
               value={switch_.address}
+              onChange={handleValueChange('address')}
               margin="normal"
             />
          <SelectValidator name="sw_type"
@@ -82,8 +85,9 @@ class SwitchForm extends React.Component<SwitchFormProps> {
           value={switch_.type}
           fullWidth
           variant="outlined"
+          onChange={handleValueChange('type')}
           margin="normal">
-          <MenuItem value='1'>I2C PLC</MenuItem>
+         <MenuItem value='1'>I2C PLC</MenuItem>
           <MenuItem value='2'>Sample</MenuItem>
         </SelectValidator>
         </DialogContent>

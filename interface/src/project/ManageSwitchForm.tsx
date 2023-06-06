@@ -38,13 +38,14 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
         coils: [false,false,false,false,false,false],
         type: 1,
         seconds: 30,
+        coilsCount: 6,
         address: 85,
         lastReadTime: 0
       }
     });
   };
 
-  uniqueName = (name: string) => {
+  uniqueSwitchName = (name: string) => {
     return !this.props.data.triggers.find(u => u.name === name);
   }
 
@@ -83,22 +84,21 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
     }
   };
 
-  handleUserValueChange = (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  handleSwitchValueChange = (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({creating: false, switch_: { ...this.state.switch_!, [name]: event.target.value } });
   };
 
-  handleUserCheckboxChange = (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({creating: false, switch_: { ...this.state.switch_!, [name]: event.target.checked } });
-  }
-
   onSubmit = () => {
     this.props.saveData();
-    // this.props.authenticatedContext.refresh();
   }
 
   
   handleSwitchCheck =  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) =>{
     this.props.socketMessage('switch', event.target.id +':'+ new String(index) +'='+(event.target.checked? '1':'0'));
+    if(this.state.switch_){
+      this.state.switch_.coils[index] = event.target.checked;
+      this.setState({creating: false, switch_: this.state.switch_ });
+    }
   }
 
   render() {
@@ -111,11 +111,9 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell align="center">Switch</TableCell>
                 <TableCell align="center">Type</TableCell>
                 <TableCell align="center">Address</TableCell>
-                <TableCell align="center">Coils</TableCell>
-                <TableCell align="center">Conditions</TableCell>
+                <TableCell align="center">Coils Count</TableCell>
                 <TableCell />
               </TableRow>
             </TableHead>
@@ -137,7 +135,7 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
                   </TableCell>
                   <TableCell align="center">
                     {
-                     switch_.coils
+                     switch_.coilsCount
                     }
                   </TableCell>
                   <TableCell align="center">
@@ -178,10 +176,9 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
             creating={creating}
             onDoneEditing={this.doneEditingSwitch}
             onCancelEditing={this.cancelEditingSwitch}
-            handleValueChange={this.handleUserValueChange}
-            handleCheckboxChange={this.handleUserCheckboxChange}
-            uniqueName={this.uniqueName}
+            handleValueChange={this.handleSwitchValueChange}
             handleSwitchCheck={this.handleSwitchCheck}
+            uniqueSwitchName={this.uniqueSwitchName}
           />
         }
       </Fragment>

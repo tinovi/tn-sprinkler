@@ -136,8 +136,10 @@ export function restController<D, P extends RestControllerProps<D>>(endpointUrl:
       }
 
       socketMessage = (key:any, value:any) =>{
+        console.log("socketMessage:"+key + " val:"+value+" sock:"+this.socket);
         if (this.socket) {
           if(this.socket.readyState === 1){
+            console.log("socket.send");
             this.socket.send(new String(key) + "|" + new String(value) );
           }
         }
