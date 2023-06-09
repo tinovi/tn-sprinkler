@@ -84,9 +84,9 @@ class DeviceInfoForm extends React.Component<DerviceInfoListProps> {
                     {device.rssi}
                   </TableCell>
                   <TableCell align="center">
-                    {/* {
-                      device.data? device.data.map((item, i) => <Pludetails key={i} {...item}/>)}
-                    } */}
+                      {Object.entries(device.data).map(([key,value])=>{
+                        return (<div>{key} : {value.toString()}</div>)
+                       })}
                  </TableCell>
                 </TableRow>
                    

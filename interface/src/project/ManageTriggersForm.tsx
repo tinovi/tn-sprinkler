@@ -17,16 +17,16 @@ import TriggerForm from './TriggerForm';
 import { SprinklerSettings, Trigger } from './types';
 
 
-type ManageUsersFormProps = RestFormProps<SprinklerSettings> & AuthenticatedContextProps;
+type ManageTriggersFormProps = RestFormProps<SprinklerSettings> & AuthenticatedContextProps;
 
-type ManageUsersFormState = {
+type ManageTriggersFormState = {
   creating: boolean;
   trigger?: Trigger;
 }
 
-class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersFormState> {
+class ManageTriggersForm extends React.Component<ManageTriggersFormProps, ManageTriggersFormState> {
 
-  state: ManageUsersFormState = {
+  state: ManageTriggersFormState = {
     creating: false
   };
   
@@ -70,7 +70,6 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
 
   cancelEditingTrigger = () => {
     this.setState({
-      creating: false,
       trigger: undefined
     });
   }
@@ -83,32 +82,33 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
       triggers.push(trigger);
       this.props.setData({ ...data, triggers });
       this.setState({
-        creating: false,
         trigger: undefined
       });
     }
   };
 
   handleTriggerValueChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({creating: false, trigger: { ...this.state.trigger!, [name]: event.target.value } });
+    this.setState({trigger: { ...this.state.trigger!, [name]: event.target.value } });
   };
 
   handleTriggerCheckboxChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({creating: false, trigger: { ...this.state.trigger!, [name]: event.target.checked } });
+    this.setState({trigger: { ...this.state.trigger!, [name]: event.target.checked } });
   }
 
   
   handleWeekCheckboxChange  =  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) =>{
-    if(this.state.trigger){
-      this.state.trigger.weekDays[index] = event.target.checked;
-      this.setState({creating: false, trigger: this.state.trigger });
+    const { trigger } = this.state;
+    if(trigger){
+      trigger.weekDays[index] = event.target.checked;
+      this.setState({creating: this.state.creating, trigger: trigger });
     }
   }
 
   handleHourCheckboxChange  =  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) =>{
-    if(this.state.trigger){
-      this.state.trigger.hours[index] = event.target.checked;
-      this.setState({creating: false, trigger: this.state.trigger });
+    const { trigger } = this.state;
+    if(trigger){
+      trigger.hours[index] = event.target.checked;
+      this.setState({creating: this.state.creating, trigger: trigger });
     }
   }
 
@@ -206,4 +206,4 @@ class ManageUsersForm extends React.Component<ManageUsersFormProps, ManageUsersF
 
 }
 
-export default withAuthenticatedContext(ManageUsersForm);
+export default withAuthenticatedContext(ManageTriggersForm);

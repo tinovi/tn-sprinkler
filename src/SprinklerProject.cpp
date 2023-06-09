@@ -183,10 +183,10 @@ void SprinklerProject::send(const char * message){
 	      delay(100); //let sensor read data
         sw.getData((byte *)&_switch.readings);
         _switch.lastReadTime = now;
-        int snum = FindEui(_switch.address);
+        uint32_t eui = _switch.type * 1000 + _switch.address;
+        int snum = FindEui(eui);
         Sensors[snum].time = now;
-        std::string devid = "SW_"+_switch.address;
-        devid.copy(Sensors[snum].devid,devid.length());
+        sprintf(Sensors[snum].devid, "SW_%d",eui);
         Sensors[snum].data.clear();
         if(_switch.readings.holdingRegs[0]!=0){
           Sensors[snum].data["adc1"] =  _switch.readings.holdingRegs[0] / 100.0;
@@ -248,6 +248,7 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
       _settings.triggers.push_back(trig);
     }
   }
+  _settings.switches.clear();
   if (root["switches"].is<JsonArray>()) {
     for (JsonVariant switcht : root["switches"].as<JsonArray>()) {
      _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["seconds"], switcht["name"], switcht["coilsCount"]));
@@ -257,6 +258,7 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
 
 
 void SprinklerProject::writeToJsonObject(JsonObject& root) {
+  root.clear();
   root["url"] = _settings.url;
   root["auth"] = _settings.auth;
    JsonArray triggers = root.createNestedArray("triggers");

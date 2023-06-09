@@ -46,7 +46,7 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
   };
 
   uniqueSwitchName = (name: string) => {
-    return !this.props.data.triggers.find(u => u.name === name);
+    return !this.props.data.switches.find(u => u.name === name);
   }
 
 
@@ -65,7 +65,6 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
 
   cancelEditingSwitch = () => {
     this.setState({
-      creating: false,
       switch_: undefined
     });
   }
@@ -78,14 +77,13 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
       switches.push(switch_);
       this.props.setData({ ...data, switches });
       this.setState({
-        creating: false,
         switch_: undefined
       });
     }
   };
 
   handleSwitchValueChange = (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({creating: false, switch_: { ...this.state.switch_!, [name]: event.target.value } });
+    this.setState({switch_: { ...this.state.switch_!, [name]: event.target.value } });
   };
 
   onSubmit = () => {
@@ -94,10 +92,11 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
 
   
   handleSwitchCheck =  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) =>{
-    this.props.socketMessage('switch', event.target.id +':'+ new String(index) +'='+(event.target.checked? '1':'0'));
-    if(this.state.switch_){
-      this.state.switch_.coils[index] = event.target.checked;
-      this.setState({creating: false, switch_: this.state.switch_ });
+    this.props.socketMessage('switch', event.target.id +':'+ index +'='+(event.target.checked? '1':'0'));
+    const { switch_ } = this.state;
+    if(switch_){
+      switch_.coils[index] = event.target.checked;
+      this.setState({creating: this.state.creating, switch_: switch_ });
     }
   }
 

@@ -107,6 +107,7 @@ export function restController<D, P extends RestControllerProps<D>>(endpointUrl:
 
       saveData = () => {
         this.setState({ loading: true });
+        console.log("saveData:"+JSON.stringify(this.state.data));
         redirectingAuthorizedFetch(endpointUrl, {
           method: 'POST',
           body: JSON.stringify(this.state.data),
@@ -140,7 +141,7 @@ export function restController<D, P extends RestControllerProps<D>>(endpointUrl:
         if (this.socket) {
           if(this.socket.readyState === 1){
             console.log("socket.send");
-            this.socket.send(new String(key) + "|" + new String(value) );
+            this.socket.send(key + "|" + value );
           }
         }
       }

@@ -34,8 +34,8 @@ class TriggerForm extends React.Component<TriggerFormProps> {
     const { trigger, creating, handleValueChange, onDoneEditing, onCancelEditing, handleWeekCheckboxChange, handleHourCheckboxChange } = this.props;
     return (
       <ValidatorForm onSubmit={onDoneEditing} ref={this.formRef}>
-        <Dialog onClose={onCancelEditing} aria-labelledby="user-form-dialog-title" open={true}>
-          <DialogTitle id="user-form-dialog-title">{creating ? 'Add' : 'Modify'} Trigger</DialogTitle>
+        <Dialog onClose={onCancelEditing} aria-labelledby="trigger-form-dialog-title" open={true}>
+          <DialogTitle id="trigger-form-dialog-title">{creating ? 'Add' : 'Modify'} Trigger</DialogTitle>
           <DialogContent dividers={true}>
             <TextValidator
               validators={creating ? ['required', 'uniqueTriggerName', 'matchRegexp:^[a-zA-Z0-9_\\.]{1,24}$'] : []}

@@ -35,8 +35,8 @@ class SwitchForm extends React.Component<SwitchFormProps> {
     const { switch_, creating, onDoneEditing, onCancelEditing, handleSwitchCheck, handleValueChange } = this.props;
     return (
       <ValidatorForm onSubmit={onDoneEditing} ref={this.formRef}>
-        <Dialog onClose={onCancelEditing} aria-labelledby="user-form-dialog-title" open={true}>
-          <DialogTitle id="user-form-dialog-title">{creating ? 'Add' : 'Modify'} Switch</DialogTitle>
+        <Dialog onClose={onCancelEditing} aria-labelledby="switch-form-dialog-title" open={true}>
+          <DialogTitle id="switch-form-dialog-title">{creating ? 'Add' : 'Modify'} Switch</DialogTitle>
           <DialogContent dividers={true}>
             <TextValidator
               validators={creating ? ['required', 'uniqueSwitchName', 'matchRegexp:^[a-zA-Z0-9_\\.]{1,24}$'] : []}
