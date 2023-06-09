@@ -30,6 +30,11 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
     creating: false
   };
 
+  
+  componentDidMount() {
+    this.props.connectSocket(undefined, undefined, undefined);
+  }
+
   createSwitch = () => {
     this.setState({
       creating: true,

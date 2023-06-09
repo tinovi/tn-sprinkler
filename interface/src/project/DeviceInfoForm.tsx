@@ -24,13 +24,16 @@ class DeviceInfoForm extends React.Component<DerviceInfoListProps> {
 
 
   componentDidMount() {
-    // this.props.loadData();
     this.props.connectSocket(this.onMessage,this.onOpen, this.onClose);
 
   }
+  onOpen = () => {
+  }
+
+  onClose = (msg:any) => {
+  }
 
   onMessage = (msg:any) => {
-    console.log(msg);
     const parsedData = JSON.parse(msg);
     var found = this.props.data.devices.find(obj => {
       return obj.devid === parsedData["devid"];
@@ -38,14 +41,6 @@ class DeviceInfoForm extends React.Component<DerviceInfoListProps> {
     if(found){
       found.data = parsedData;
     }
-  }
-  onOpen = () => {
-    console.log("open"); 
-  }
-
-  onClose = (msg:any) => {
-    console.log(msg);
-    this.props.connectSocket(this.onMessage,this.onOpen, this.onClose);
   }
 
   onSubmit = () => {

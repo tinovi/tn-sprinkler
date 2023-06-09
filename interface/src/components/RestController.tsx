@@ -15,7 +15,7 @@ export interface RestControllerProps<D> extends WithSnackbarProps {
   setData: (data: D) => void;
   saveData: () => void;
   loadData: () => void;
-  connectSocket: (onSocketMsg: Function, onSocketOpen?: Function, onSocketClose?: Function) => void;
+  connectSocket: (onSocketMsg?: Function, onSocketOpen?: Function, onSocketClose?: Function) => void;
   socketEventMessage: (key:any, value:any) => void;
   socketMessage: (key:any, value:any) => void;
 
@@ -48,7 +48,7 @@ export function restController<D, P extends RestControllerProps<D>>(endpointUrl:
     
       
 
-      connectSocket = (onSocketMsg: Function, onSocketOpen?: Function, onSocketClose?: Function) => {
+      connectSocket = (onSocketMsg?: Function, onSocketOpen?: Function, onSocketClose?: Function) => {
 
         if (!this.socket) {
           const accessToken = localStorage.getItem(ACCESS_TOKEN);
@@ -62,19 +62,24 @@ export function restController<D, P extends RestControllerProps<D>>(endpointUrl:
         }
         if (onSocketOpen) {
           this.socket.onopen = () => {
+            console.log("onSocketOpen:");
             onSocketOpen();
           }
         }
-        this.socket.onmessage = (message: any) => {
-          onSocketMsg(message);
+        if (onSocketMsg) {
+          this.socket.onmessage = (message: any) => {
+            console.log("onSocketMsg:"+message);
+            onSocketMsg(message);
+          }
         }
         if (onSocketClose) {
           this.socket.onclose = (err: any) => {
+            console.log("onSocketClose:"+err);
             this.socket = undefined;
             onSocketClose(err);
           }
         }
-      }
+    }
 
       setData = (data: D) => {
         this.setState({
