@@ -3,16 +3,20 @@
   "auth":"",
   "triggers":[{
     "name": "test",
-    "devid": "device1",
-    "sensor": "device1",
     "switchName": "i2cPLC1",
     "coil": 0,
     "weekDays": [false, false, false, false, false, false, false],
     "hours": [false, false, false, false, false, false, false ,false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-    "onVal": 0,
-    "offVal": 0,
     "onTimeMinute": 0,
-    "maxTimeSec": 0
+    "maxTimeSec": 0,
+    "conditions":[
+                  { 
+                    "devid": "device1",
+                    "sensor": "s1",
+                    "onVal": 0,
+                    "offVal": 0
+                 }
+              ]
   }],
   "switches":[{
     "name": "i2cPLC1",

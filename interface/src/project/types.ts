@@ -12,19 +12,23 @@ export interface DerviceInfo {
 }
 
 
-export interface Trigger {
-  name: string;
+export interface TriggerCondition {
   devid: string;
   sensor: string;
+  onVal: number;
+  offVal: number;
+}
+
+export interface Trigger {
+  name: string;
   switchName: string;
   coil: number;
   weekDays: boolean[];
   hours: boolean[];
-  onVal: number;
-  offVal: number;
   onTimeMinute: number;
   maxTimeSec: number;
   lastOnTime: number;
+  conditions: TriggerCondition[];
 }
 
 export interface Switch {

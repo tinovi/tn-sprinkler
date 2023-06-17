@@ -236,7 +236,7 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
   _settings.triggers.clear();
   if (root["triggers"].is<JsonArray>()) {
     for (JsonVariant trigger : root["triggers"].as<JsonArray>()) {
-      Trigger_t trig(trigger["name"], trigger["devid"], trigger["sensor"], trigger["switchName"], trigger["coil"], trigger["onVal"], trigger["offVal"], trigger["onTimeMinute"], trigger["maxTimeSec"]);
+      Trigger_t trig(trigger["name"], trigger["switchName"], trigger["coil"], trigger["onTimeMinute"], trigger["maxTimeSec"]);
       int i = 0;
       for (JsonVariant weekDay : root["weekDays"].as<JsonArray>()) {
         trig.weekDays[i++] = weekDay;
@@ -244,6 +244,10 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
       i = 0;
       for (JsonVariant hour : root["hours"].as<JsonArray>()) {
         trig.hours[i++] = hour;
+      }
+      i = 0;
+      for (JsonVariant cond : root["conditions"].as<JsonArray>()) {
+        trig.conditions.push_back(TriggerCondition_t(cond["devid"],cond["sensor"],cond["onVal"],cond["offVal"]));
       }
       _settings.triggers.push_back(trig);
     }
@@ -261,12 +265,10 @@ void SprinklerProject::writeToJsonObject(JsonObject& root) {
   root.clear();
   root["url"] = _settings.url;
   root["auth"] = _settings.auth;
-   JsonArray triggers = root.createNestedArray("triggers");
+  JsonArray triggers = root.createNestedArray("triggers");
   for (Trigger_t _trigger : _settings.triggers) {
     JsonObject trigger = triggers.createNestedObject();
     trigger["name"] = _trigger.name;
-    trigger["devid"] = _trigger.devid;
-    trigger["sensor"] = _trigger.sensor;
     trigger["switchName"] = _trigger.switchName;
     trigger["coil"] = _trigger.coil;
     JsonArray weekDays = trigger.createNestedArray("weekDays");
@@ -278,9 +280,16 @@ void SprinklerProject::writeToJsonObject(JsonObject& root) {
       hours.add(hour);
     }
     trigger["onTimeMinute"] = _trigger.onTimeMinute;
-    trigger["onVal"] = _trigger.onVal;
-    trigger["offVal"] = _trigger.offVal;
     trigger["maxTimeSec"] = _trigger.maxTimeSec;
+    JsonArray conditions = trigger.createNestedArray("conditions");
+    for(TriggerCondition_t cond:_trigger.conditions){
+      JsonObject condition = conditions.createNestedObject();
+      trigger["devid"] = cond.devid;
+      trigger["sensor"] = cond.sensor;
+      trigger["onVal"] = cond.onVal;
+      trigger["offVal"] = cond.offVal;
+      conditions.add(condition);
+    }
   }
    JsonArray switches = root.createNestedArray("switches");
   for (Switch_t _switch : _settings.switches) {
