@@ -1,11 +1,16 @@
 import React, { RefObject } from 'react';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, FormControlLabel, Checkbox } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogActions, FormControlLabel, Checkbox, Button } from '@material-ui/core';
+
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+import SaveIcon from '@material-ui/icons/Save';
 
 import { FormButton } from '../components';
 
-import { Trigger } from './types';
+import { Trigger, TriggerCondition } from './types';
 
 interface TriggerFormProps {
   creating: boolean;
@@ -16,7 +21,11 @@ interface TriggerFormProps {
   handleHourCheckboxChange:  (index:number) => (event:React.ChangeEvent<HTMLInputElement>) => void;
   onDoneEditing: () => void;
   onCancelEditing: () => void;
+  addTriggerCond: () => void;
+  removeTriggerCond: (index:number) => void;
+  doneTriggerCond: (index:number, name: keyof TriggerCondition) => (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
 
 class TriggerForm extends React.Component<TriggerFormProps> {
 
@@ -31,7 +40,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
   }
     
   render() {
-    const { trigger, creating, handleValueChange, onDoneEditing, onCancelEditing, handleWeekCheckboxChange, handleHourCheckboxChange } = this.props;
+    const { trigger, creating, handleValueChange, onDoneEditing, onCancelEditing, handleWeekCheckboxChange, handleHourCheckboxChange, addTriggerCond, removeTriggerCond, doneTriggerCond } = this.props;
     return (
       <ValidatorForm onSubmit={onDoneEditing} ref={this.formRef}>
         <Dialog onClose={onCancelEditing} aria-labelledby="trigger-form-dialog-title" open={true}>
@@ -47,6 +56,17 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               value={trigger.name}
               disabled={!creating}
               onChange={handleValueChange('name')}
+              margin="normal"
+            />
+             <TextValidator
+              validators={['required']}
+              errorMessages={['Switch Name is required']}
+              name="tr_switch"
+              label="Switch Name"
+              fullWidth
+              variant="outlined"
+              value={trigger.switchName}
+              onChange={handleValueChange('switchName')}
               margin="normal"
             />
              <TextValidator
@@ -110,24 +130,55 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               onChange={handleValueChange('onTimeMinute')}
               margin="normal"
             />
-             <TextValidator
-              name="tr_onVal"
-              label="On val"
-              fullWidth
-              variant="outlined"
-              value={trigger.onVal}
-              onChange={handleValueChange('onVal')}
-              margin="normal"
-            />
-             <TextValidator
-              name="tr_offVal"
-              label="Off val"
-              fullWidth
-              variant="outlined"
-              value={trigger.offVal}
-              onChange={handleValueChange('offVal')}
-              margin="normal"
-            />
+
+              <ul>
+              {trigger.conditions.map((cond, index) => (<li>
+                    <TextValidator
+                  name="tr_devId"
+                  label="devid"
+                  variant="outlined"
+                  value={cond.devid}
+                  onChange={doneTriggerCond(index, 'devid')}
+                  margin="normal"
+                />
+                    <TextValidator
+                  name="tr_onVal"
+                  label="sensor"
+                  variant="outlined"
+                  value={cond.sensor}
+                  onChange={doneTriggerCond(index, 'sensor')}
+                  margin="normal"
+                />
+                    
+                    <TextValidator
+                  name="tr_onVal"
+                  label="On val"
+                  variant="outlined"
+                  value={cond.onVal}
+                  onChange={doneTriggerCond(index, 'onVal')}
+                  margin="normal"
+                />
+                <TextValidator
+                  name="tr_offVal"
+                  label="Off val"
+                  variant="outlined"
+                  value={cond.offVal}
+                  onChange={doneTriggerCond(index, 'offVal')}
+                  margin="normal"
+                />
+                 <Button startIcon={<DeleteIcon />} variant="contained" color="secondary" onClick={() =>removeTriggerCond(index)}>
+                    Delete
+                  </Button>                 
+                 </li>))} 
+                <li>
+                <Button startIcon={<PersonAddIcon />} variant="contained" color="secondary" onClick={addTriggerCond}>
+                    Add Conditon
+                  </Button>
+                </li>
+             </ul>
+             
+
+             
              <TextValidator
               name="tr_maxTimeSec"
               label="Max time sec"

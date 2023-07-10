@@ -14,7 +14,7 @@ import { withAuthenticatedContext, AuthenticatedContextProps } from '../authenti
 import { RestFormProps, FormActions, FormButton } from '../components';
 
 import TriggerForm from './TriggerForm';
-import { SprinklerSettings, Trigger } from './types';
+import { SprinklerSettings, Trigger, TriggerCondition } from './types';
 
 
 type ManageTriggersFormProps = RestFormProps<SprinklerSettings> & AuthenticatedContextProps;
@@ -35,14 +35,11 @@ class ManageTriggersForm extends React.Component<ManageTriggersFormProps, Manage
       creating: true,
       trigger: {
         name: "",
-        devid:"",
-        sensor:"",
-        switchName: "",
+        switchName:"",
         coil: 0,
         weekDays: [false, false, false, false, false, false, false],
         hours:  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-        onVal: 0,
-        offVal: 0,
+        conditions:[],
         onTimeMinute: 0,
         maxTimeSec: 0,
         lastOnTime: 0
@@ -87,6 +84,36 @@ class ManageTriggersForm extends React.Component<ManageTriggersFormProps, Manage
     }
   };
 
+
+  addTriggerCond = () =>{
+    const { trigger } = this.state;
+    if(trigger){
+      trigger.conditions.push({
+        devid: "",
+        sensor: "",
+        onVal: 0,
+        offVal: 0});
+    }
+    this.setState({creating: this.state.creating, trigger: trigger });
+  }; 
+  
+  removeTriggerCond = (index:number) =>{
+    const { trigger } = this.state;
+    if(trigger){
+      trigger.conditions.splice(index,1);
+      this.setState({creating: this.state.creating, trigger: trigger });
+    }
+
+  }; 
+  
+  doneTriggerCond  =  (index:number, name: keyof TriggerCondition) => (event: React.ChangeEvent<HTMLInputElement>) =>{
+    const { trigger } = this.state;
+    if(trigger){
+      trigger.conditions[index] = { ...trigger.conditions[index], [name]: event.target.value };
+      this.setState({creating: this.state.creating, trigger: trigger });
+    }
+  }
+
   handleTriggerValueChange = (name: keyof Trigger) => (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({trigger: { ...this.state.trigger!, [name]: event.target.value } });
   };
@@ -112,7 +139,6 @@ class ManageTriggersForm extends React.Component<ManageTriggersFormProps, Manage
     }
   }
 
-
   onSubmit = () => {
     this.props.saveData();
     // this.props.authenticatedContext.refresh(); onTime
@@ -130,7 +156,7 @@ class ManageTriggersForm extends React.Component<ManageTriggersFormProps, Manage
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell align="center">Switch</TableCell>
-                <TableCell align="center">Device.Sensor</TableCell>
+                <TableCell align="center">Coil</TableCell>
                 <TableCell align="center">OnTimeMinute</TableCell>
                 <TableCell />
               </TableRow>
@@ -148,7 +174,7 @@ class ManageTriggersForm extends React.Component<ManageTriggersFormProps, Manage
                   </TableCell>
                   <TableCell align="center">
                     {
-                     trigger.devid +'.'+ trigger.sensor
+                     trigger.coil
                     }
                   </TableCell>
                   <TableCell align="center">
@@ -198,6 +224,9 @@ class ManageTriggersForm extends React.Component<ManageTriggersFormProps, Manage
             handleWeekCheckboxChange={this.handleWeekCheckboxChange}
             handleHourCheckboxChange={this.handleHourCheckboxChange}
             uniqueTriggerName={this.uniqueTriggerName}
+            addTriggerCond={this.addTriggerCond}
+            removeTriggerCond={this.removeTriggerCond}
+            doneTriggerCond={this.doneTriggerCond}
           />
         }
       </Fragment>
