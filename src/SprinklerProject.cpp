@@ -245,10 +245,9 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
       for (JsonVariant hour : trigger["hours"].as<JsonArray>()) {
         trig.hours[i++] = hour;
       }
-      i = 0;
+      trig.conditions.clear();
       for (JsonVariant cond : trigger["conditions"].as<JsonArray>()) {
-        TriggerCondition_t lc = TriggerCondition_t(cond["devid"],cond["sensor"],cond["onVal"],cond["offVal"]);
-        trig.conditions.push_back(lc);
+        trig.conditions.push_back(TriggerCondition_t(cond["devid"],cond["sensor"],cond["onVal"],cond["offVal"]));
       }
       _settings.triggers.push_back(trig);
     }
