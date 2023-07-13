@@ -45,7 +45,8 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
         seconds: 30,
         coilsCount: 6,
         address: 85,
-        lastReadTime: 0
+        lastReadTime: 0,
+        allowMulti: false
       }
     });
   };
@@ -86,6 +87,10 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
       });
     }
   };
+
+  handleSwitchCheckboxChange = (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({switch_: { ...this.state.switch_!, [name]: event.target.checked } });
+  }
 
   handleSwitchValueChange = (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({switch_: { ...this.state.switch_!, [name]: event.target.value } });
@@ -181,6 +186,7 @@ class ManageSwitchForm extends React.Component<ManageSwitchFormProps, ManageSwit
             onDoneEditing={this.doneEditingSwitch}
             onCancelEditing={this.cancelEditingSwitch}
             handleValueChange={this.handleSwitchValueChange}
+            handleCheckboxChange={this.handleSwitchCheckboxChange}
             handleSwitchCheck={this.handleSwitchCheck}
             uniqueSwitchName={this.uniqueSwitchName}
           />

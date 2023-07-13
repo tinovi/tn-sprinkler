@@ -238,16 +238,17 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
     for (JsonVariant trigger : root["triggers"].as<JsonArray>()) {
       Trigger_t trig(trigger["name"], trigger["switchName"], trigger["coil"], trigger["onTimeMinute"], trigger["maxTimeSec"]);
       int i = 0;
-      for (JsonVariant weekDay : root["weekDays"].as<JsonArray>()) {
+      for (JsonVariant weekDay : trigger["weekDays"].as<JsonArray>()) {
         trig.weekDays[i++] = weekDay;
       }
       i = 0;
-      for (JsonVariant hour : root["hours"].as<JsonArray>()) {
+      for (JsonVariant hour : trigger["hours"].as<JsonArray>()) {
         trig.hours[i++] = hour;
       }
       i = 0;
-      for (JsonVariant cond : root["conditions"].as<JsonArray>()) {
-        trig.conditions.push_back(TriggerCondition_t(cond["devid"],cond["sensor"],cond["onVal"],cond["offVal"]));
+      for (JsonVariant cond : trigger["conditions"].as<JsonArray>()) {
+        TriggerCondition_t lc = TriggerCondition_t(cond["devid"],cond["sensor"],cond["onVal"],cond["offVal"]);
+        trig.conditions.push_back(lc);
       }
       _settings.triggers.push_back(trig);
     }
@@ -255,7 +256,7 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
   _settings.switches.clear();
   if (root["switches"].is<JsonArray>()) {
     for (JsonVariant switcht : root["switches"].as<JsonArray>()) {
-     _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["seconds"], switcht["name"], switcht["coilsCount"]));
+     _settings.switches.push_back(Switch_t(switcht["type"], switcht["address"], switcht["seconds"], switcht["name"], switcht["coilsCount"], switcht["allowMulti"]));
     }
   }
 }
@@ -281,13 +282,14 @@ void SprinklerProject::writeToJsonObject(JsonObject& root) {
     }
     trigger["onTimeMinute"] = _trigger.onTimeMinute;
     trigger["maxTimeSec"] = _trigger.maxTimeSec;
+
     JsonArray conditions = trigger.createNestedArray("conditions");
     for(TriggerCondition_t cond:_trigger.conditions){
       JsonObject condition = conditions.createNestedObject();
-      trigger["devid"] = cond.devid;
-      trigger["sensor"] = cond.sensor;
-      trigger["onVal"] = cond.onVal;
-      trigger["offVal"] = cond.offVal;
+      condition["devid"] = cond.devid;
+      condition["sensor"] = cond.sensor;
+      condition["onVal"] = cond.onVal;
+      condition["offVal"] = cond.offVal;
       conditions.add(condition);
     }
   }
@@ -299,6 +301,7 @@ void SprinklerProject::writeToJsonObject(JsonObject& root) {
     switcht["address"] = _switch.address;
     switcht["seconds"] = _switch.seconds;
     switcht["coilsCount"] = _switch.coilsCount;
+    switcht["allowMulti"] = _switch.allowMulti;
     
     JsonArray coils = switcht.createNestedArray("coils");
     for(int i=0; i<_switch.coilsCount;i++){

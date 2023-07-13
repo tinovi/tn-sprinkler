@@ -58,9 +58,10 @@ class Switch_t {
   time_t lastReadTime;  //last read time
   vals_t readings;
   uint8_t coilsCount;  // coils count
+  bool allowMulti;
  public:
-   Switch_t(uint8_t type, int16_t address, int16_t seconds,  String name, uint8_t coilsCount) 
-      : type(type),address(address),seconds(seconds), name(name), coilsCount(coilsCount){
+   Switch_t(uint8_t type, int16_t address, int16_t seconds,  String name, uint8_t coilsCount, bool allowMulti) 
+      : type(type),address(address),seconds(seconds), name(name), coilsCount(coilsCount), allowMulti(allowMulti){
    }
 };
 
@@ -77,12 +78,25 @@ class SwitchType_t {
    }
 };
 
+
+class DeviceName_t {
+ public:
+  String devid;
+  String name;
+
+ public:
+   DeviceName_t(String devid, String name) 
+      : devid(devid), name(name) {
+   }
+};
+
 class SprinklerSettings {
  public:
     String url;
     String auth;
     std::list<Trigger_t> triggers;
     std::list<Switch_t> switches;
+    std::list<DeviceName_t> devices;
 };
 
 class SprinklerProject : public AdminSettingsService<SprinklerSettings> {

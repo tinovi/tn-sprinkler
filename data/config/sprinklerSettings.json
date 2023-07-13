@@ -13,17 +13,24 @@
                   { 
                     "devid": "device1",
                     "sensor": "s1",
-                    "onVal": 0,
-                    "offVal": 0
-                 }
-              ]
+                    "onVal": 2.2,
+                    "offVal": 4.6
+                 },
+                 { 
+                  "devid": "device1",
+                  "sensor": "s2",
+                  "onVal": 0.1,
+                  "offVal": 0.6
+               }
+            ]
   }],
   "switches":[{
     "name": "i2cPLC1",
     "address": 85,
     "type": 1,
     "coilsCount": 6,
-    "seconds": 30 
+    "seconds": 30,
+    "allowMulti": false 
   }],
   "switchTypees":[{
     "name": "i2cPLC",

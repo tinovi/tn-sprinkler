@@ -5,6 +5,7 @@ export interface DerviceInfoList {
 
 export interface DerviceInfo {
   devid: string;
+  name: string;
   rssi: number;
   bat: number;
   time: number;
@@ -39,6 +40,7 @@ export interface Switch {
   address: number;
   seconds: number;
   lastReadTime: number;
+  allowMulti: boolean;
 }
 
 export interface SwitchType {

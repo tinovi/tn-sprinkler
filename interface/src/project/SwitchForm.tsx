@@ -1,9 +1,9 @@
 import React, { RefObject } from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 
-import { Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Checkbox } from '@material-ui/core';
 
-import { FormButton } from '../components';
+import { FormButton, BlockFormControlLabel } from '../components';
 
 import { Switch } from './types';
 
@@ -14,6 +14,7 @@ interface SwitchFormProps {
   switch_: Switch;
   uniqueSwitchName: (value: any) => boolean;
   handleValueChange: (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleCheckboxChange: (name: keyof Switch) => (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
   onDoneEditing: () => void;
   onCancelEditing: () => void;
   handleSwitchCheck: (index:number) => (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -32,7 +33,7 @@ class SwitchForm extends React.Component<SwitchFormProps> {
   }
 
   render() {
-    const { switch_, creating, onDoneEditing, onCancelEditing, handleSwitchCheck, handleValueChange } = this.props;
+    const { switch_, creating, onDoneEditing, onCancelEditing, handleSwitchCheck, handleValueChange, handleCheckboxChange } = this.props;
     return (
       <ValidatorForm onSubmit={onDoneEditing} ref={this.formRef}>
         <Dialog onClose={onCancelEditing} aria-labelledby="switch-form-dialog-title" open={true}>
@@ -61,6 +62,17 @@ class SwitchForm extends React.Component<SwitchFormProps> {
               onChange={handleValueChange('coilsCount')}
               margin="normal"
             />
+            <BlockFormControlLabel
+              control={
+                <Checkbox
+                  value="allowMulti"
+                  checked={switch_.allowMulti}
+                  onChange={handleCheckboxChange("allowMulti")}
+                />
+              }
+              label="Allow Muti switch On"
+            />
+
               {switch_.coils.map((coilFlag, index) => (  
                 <label>
                   <input type="checkbox" id={switch_.name} checked={switch_.coils[index]} onChange={handleSwitchCheck(index)} />
@@ -78,6 +90,7 @@ class SwitchForm extends React.Component<SwitchFormProps> {
               onChange={handleValueChange('address')}
               margin="normal"
             />
+
          <SelectValidator name="sw_type"
           validators={['required']}
           errorMessages={['Type is required']}

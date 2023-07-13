@@ -5,8 +5,6 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, FormControlLabel, Ch
 
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import SaveIcon from '@material-ui/icons/Save';
 
 import { FormButton } from '../components';
 
@@ -70,7 +68,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
               margin="normal"
             />
              <TextValidator
-              validators={['required']}
+              validators={['required', 'isNumber', 'minNumber:0', 'maxNumber:65535']}
               errorMessages={['Coil is required']}
               name="tr_coil"
               label="Coil"
@@ -132,7 +130,7 @@ class TriggerForm extends React.Component<TriggerFormProps> {
             />
 
               <ul>
-              {trigger.conditions.map((cond, index) => (<li>
+              {trigger.conditions.map((cond, index) => (<li key={''+index}>
                     <TextValidator
                   name="tr_devId"
                   label="devid"

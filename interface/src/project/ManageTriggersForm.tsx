@@ -95,6 +95,7 @@ class ManageTriggersForm extends React.Component<ManageTriggersFormProps, Manage
         offVal: 0});
     }
     this.setState({creating: this.state.creating, trigger: trigger });
+    console.log("addTriggerCond:"+JSON.stringify(this.state));
   }; 
   
   removeTriggerCond = (index:number) =>{
@@ -140,6 +141,8 @@ class ManageTriggersForm extends React.Component<ManageTriggersFormProps, Manage
   }
 
   onSubmit = () => {
+    console.log("onSubmit:"+JSON.stringify(this.state));
+
     this.props.saveData();
     // this.props.authenticatedContext.refresh(); onTime
   }
