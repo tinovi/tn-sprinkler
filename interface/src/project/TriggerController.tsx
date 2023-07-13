@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import {restController, RestControllerProps, RestFormLoader, SectionContent } from '../components';
-import { SPRINKLER_SETTINGS_ENDPOINT } from '../api';
+import { TRIGGERS_SETTINGS_FILE } from '../api';
 
 import ManageTriggersForm from './ManageTriggersForm';
 import { SprinklerSettings } from './types';
@@ -27,4 +27,4 @@ class TriggerController extends Component<TriggerControllerProps> {
 
 }
 
-export default restController(SPRINKLER_SETTINGS_ENDPOINT, TriggerController);
+export default restController(TRIGGERS_SETTINGS_FILE, TriggerController);

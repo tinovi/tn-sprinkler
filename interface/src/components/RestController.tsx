@@ -127,6 +127,7 @@ export function restController<D, P extends RestControllerProps<D>>(endpointUrl:
         }).then(json => {
           this.props.enqueueSnackbar("Changes successfully applied.", { variant: 'success' });
           this.setState({ data: json, loading: false });
+          console.log("saveDataResp:"+JSON.stringify(this.state.data));
         }).catch(error => {
           const errorMessage = error.message || "Unknown error";
           this.props.enqueueSnackbar("Problem saving: " + errorMessage, { variant: 'error' });

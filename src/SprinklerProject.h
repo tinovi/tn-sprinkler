@@ -2,6 +2,7 @@
 #define SprinklerProject_h
 
 #include <AdminSettingsService.h>
+#include <Triggers.h>
 #include <ESP8266React.h>
 #include "decoder.h"
 #include "switchI2C.h"
@@ -14,40 +15,6 @@
 #define SPRINKLER_SETTINGS_FILE "/config/sprinklerSettings.json"
 #define SPRINKLER_SETTINGS_PATH "/rest/sprinklerSettings"
 #define DEVICES_SERVICE_PATH "/rest/devices"
-
-class TriggerCondition_t {
- public:
-  String devid;  // device 
-  String sensor;  // device sensor 
-  int16_t onVal;   /**Sensor VWC value to switch On*/
-  int16_t offVal;   /**Sensor VWC value to switch off*/
-
- public:
-   TriggerCondition_t(){
-   } 
-
-   TriggerCondition_t( String devid, String sensor, int16_t onVal, int16_t offVal) 
-   : devid(devid), sensor(sensor), onVal(onVal), offVal(offVal){
-   }
-};
- 
-class Trigger_t {
- public:
-  String name;
-  String switchName;  // switch 
-  uint8_t coil;  // coil number
-  bool weekDays[7];  // bit week days operational
-  bool hours[24];  //bit hours of day operational
-  uint8_t onTimeMinute;  // trigger on minute if hour
-  uint16_t maxTimeSec; /**Max time active seconds*/
-  time_t lastOnTime;  //last switched on
-  std::list<TriggerCondition_t> conditions;  // bit week days operational
-  
- public:
-   Trigger_t(String name, String switchName, uint8_t coil, uint8_t onTimeMinute, uint16_t maxTimeSec) 
-   : name(name), switchName(switchName), coil(coil), onTimeMinute(onTimeMinute), maxTimeSec(maxTimeSec){
-   }
-};
 
 class Switch_t {
  public:
@@ -94,7 +61,6 @@ class SprinklerSettings {
  public:
     String url;
     String auth;
-    std::list<Trigger_t> triggers;
     std::list<Switch_t> switches;
     std::list<DeviceName_t> devices;
 };
@@ -105,14 +71,16 @@ class SprinklerProject : public AdminSettingsService<SprinklerSettings> {
   ~SprinklerProject();
 
   void loop();
+  void begin();
   
  private:
+  Triggers _triggers;
   unsigned long _lastBlink = 0;
   AsyncWebSocket ws;
   AsyncWebSocketClient* wsClient;
   void devicesList(AsyncWebServerRequest* request);
   void readData();
-  void checkTrigger();
+  void checkSwitch();
   void triggerOutput(Trigger_t *_trigger, uint8_t status);
  protected:
   void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);

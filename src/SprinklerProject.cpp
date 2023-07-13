@@ -6,7 +6,7 @@
 
 SprinklerProject::SprinklerProject(AsyncWebServer* server, FS* fs, SecurityManager* securityManager) :
     AdminSettingsService(server, fs, securityManager, SPRINKLER_SETTINGS_PATH, SPRINKLER_SETTINGS_FILE),
-    ws("/ws") {
+    ws("/ws"), _triggers(server, fs, securityManager) {
   
   //Wensockets handle
    ws.onEvent(std::bind(&SprinklerProject::onWsEvent, this, std::placeholders::_1, std::placeholders::_2, 
@@ -21,6 +21,12 @@ SprinklerProject::SprinklerProject(AsyncWebServer* server, FS* fs, SecurityManag
 }
 
 SprinklerProject::~SprinklerProject() {
+}
+
+
+void SprinklerProject::begin() {
+  SettingsService::begin();
+  _triggers.begin();
 }
 
 void SprinklerProject::devicesList(AsyncWebServerRequest* request) {
@@ -166,7 +172,7 @@ void SprinklerProject::send(const char * message){
   #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
  
 
-  void SprinklerProject::checkTrigger(){
+  void SprinklerProject::checkSwitch(){
     struct tm timeinfo;
     time_t now = time(nullptr);
 
@@ -202,29 +208,12 @@ void SprinklerProject::send(const char * message){
         }
       }
     }
-    for (Trigger_t _trigger : _settings.triggers) {
-      /// check if running, an its time to switch off
-      // if(_trigger.onTime && _trigger.maxTimeSec && (now - _trigger.onTime)>_trigger.maxTimeSec){
-      //   triggerOutput(&_trigger, 0);
-      //   continue;
-      // }
-      // //not triggered and time active
-      // if (_trigger.onTime == 0 && CHECK_BIT(_trigger.weekDays, timeinfo.tm_wday) && CHECK_BIT(_trigger.hours, timeinfo.tm_hour)) 
-      // {
-      
-      //   if (_trigger.minute && _trigger.minute == (timeinfo.tm_min + 1)) 
-      //   {
-      //     triggerOutput(&_trigger, 1);
-      //     continue;
-      //   }      
-      // }      
-    }
   }
 	
   void SprinklerProject::loop(){
     delay(100);
     readData();
-    checkTrigger();
+    //checkSwitch();
   }
 
 
@@ -233,25 +222,6 @@ void SprinklerProject::readFromJsonObject(JsonObject& root) {
   _settings.url = root["url"] | DEFFAULT_URL;
   _settings.auth = root["auth"]| "";
     // users
-  _settings.triggers.clear();
-  if (root["triggers"].is<JsonArray>()) {
-    for (JsonVariant trigger : root["triggers"].as<JsonArray>()) {
-      Trigger_t trig(trigger["name"], trigger["switchName"], trigger["coil"], trigger["onTimeMinute"], trigger["maxTimeSec"]);
-      int i = 0;
-      for (JsonVariant weekDay : trigger["weekDays"].as<JsonArray>()) {
-        trig.weekDays[i++] = weekDay;
-      }
-      i = 0;
-      for (JsonVariant hour : trigger["hours"].as<JsonArray>()) {
-        trig.hours[i++] = hour;
-      }
-      trig.conditions.clear();
-      for (JsonVariant cond : trigger["conditions"].as<JsonArray>()) {
-        trig.conditions.push_back(TriggerCondition_t(cond["devid"],cond["sensor"],cond["onVal"],cond["offVal"]));
-      }
-      _settings.triggers.push_back(trig);
-    }
-  }
   _settings.switches.clear();
   if (root["switches"].is<JsonArray>()) {
     for (JsonVariant switcht : root["switches"].as<JsonArray>()) {
@@ -265,34 +235,7 @@ void SprinklerProject::writeToJsonObject(JsonObject& root) {
   root.clear();
   root["url"] = _settings.url;
   root["auth"] = _settings.auth;
-  JsonArray triggers = root.createNestedArray("triggers");
-  for (Trigger_t _trigger : _settings.triggers) {
-    JsonObject trigger = triggers.createNestedObject();
-    trigger["name"] = _trigger.name;
-    trigger["switchName"] = _trigger.switchName;
-    trigger["coil"] = _trigger.coil;
-    JsonArray weekDays = trigger.createNestedArray("weekDays");
-    for(bool day:_trigger.weekDays){
-      weekDays.add(day);
-    }
-    JsonArray hours = trigger.createNestedArray("hours");
-    for(bool hour:_trigger.hours){
-      hours.add(hour);
-    }
-    trigger["onTimeMinute"] = _trigger.onTimeMinute;
-    trigger["maxTimeSec"] = _trigger.maxTimeSec;
-
-    JsonArray conditions = trigger.createNestedArray("conditions");
-    for(TriggerCondition_t cond:_trigger.conditions){
-      JsonObject condition = conditions.createNestedObject();
-      condition["devid"] = cond.devid;
-      condition["sensor"] = cond.sensor;
-      condition["onVal"] = cond.onVal;
-      condition["offVal"] = cond.offVal;
-      conditions.add(condition);
-    }
-  }
-   JsonArray switches = root.createNestedArray("switches");
+  JsonArray switches = root.createNestedArray("switches");
   for (Switch_t _switch : _settings.switches) {
     JsonObject switcht = switches.createNestedObject();
     switcht["name"] = _switch.name;

@@ -17,3 +17,4 @@ export const RESTART_ENDPOINT = ENDPOINT_ROOT + "restart";
 
 export const LIST_DEVICES_ENDPOINT = ENDPOINT_ROOT + "devices";
 export const SPRINKLER_SETTINGS_ENDPOINT = ENDPOINT_ROOT + "sprinklerSettings";
+export const TRIGGERS_SETTINGS_FILE = ENDPOINT_ROOT + "triggerSettings";

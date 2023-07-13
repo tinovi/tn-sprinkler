@@ -141,10 +141,7 @@ class ManageTriggersForm extends React.Component<ManageTriggersFormProps, Manage
   }
 
   onSubmit = () => {
-    console.log("onSubmit:"+JSON.stringify(this.state));
-
     this.props.saveData();
-    // this.props.authenticatedContext.refresh(); onTime
   }
   
   
